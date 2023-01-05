@@ -4,32 +4,9 @@ library(dplyr)
 library(shinycssloaders)
 library(leaflet)
 
-df_raw_t <- read.csv("december_data_t", encoding = 'UTF-8')
-df_raw_w <- read.csv("december_data_w", encoding = 'UTF-8')
-
-df_t <- df_raw_t %>%
-  select(placeVisit_location_name, placeVisit_location_address,
-         placeVisit_duration_startTimestamp,
-         placeVisit_location_latitudeE7, placeVisit_location_longitudeE7
-         #i inne potrzebne kolumny
-         ) %>%
-  mutate(person = "Tymek") %>%
-  mutate(color = 'blue')
-
-df_w <- df_raw_w %>%
-  select(placeVisit_location_name, placeVisit_location_address,
-         placeVisit_duration_startTimestamp,
-         placeVisit_location_latitudeE7, placeVisit_location_longitudeE7) %>%
-  mutate(person = "Wojtek") %>%
-  mutate(color = "yellow")
-
-df_raw = rbind(df_t, df_w)
-
-map_df <- df_raw %>%
-  filter(placeVisit_location_address != "") %>%
-  mutate(date = substr(placeVisit_duration_startTimestamp, 1, 10)) %>%
-  mutate(lat = placeVisit_location_latitudeE7 / 10000000) %>%
-  mutate(lng = placeVisit_location_longitudeE7 / 10000000)
+map_df <- read.csv("map_df.csv", encoding = 'UTF-8')
+#time_df <- 
+#trans_df <- 
 
 map_ui <- fluidPage(
   
@@ -54,8 +31,8 @@ map_ui <- fluidPage(
       ),
       column(width = 6,
              dateRangeInput("date_range", "Select date range:",
-                            start = "2022-12-07", end = "2022-12-20",
-                            min = "2022-12-07", max = "2022-12-20",
+                            start = "2022-12-07", end = "2023-01-05",
+                            min = "2022-12-07", max = "2023-01-05",
                             format = "yyyy-mm-dd", startview = "month",
                             autoclose = TRUE)
              
@@ -74,11 +51,18 @@ map_ui <- fluidPage(
 )
 
 
-ui2 <- fluidPage(
+time_ui <- fluidPage(
   
   titlePanel("Czas"),
   "Czas spędzony w miejscach z danej kategorii"
 )
+
+trans_ui <- fluidPage(
+  
+  titlePanel("Transport"),
+  "transport czarka"
+)
+
 
 server <- function(input, output) {
   
@@ -93,7 +77,7 @@ server <- function(input, output) {
       addTiles() %>% 
       addCircleMarkers(lng = ~lng,
                        lat = ~lat,
-                       radius = ~number + 5,
+                       radius = ~number,
                        popup = ~placeVisit_location_name,
                        color = ~color)
   })
@@ -103,8 +87,9 @@ server <- function(input, output) {
 app_ui <- navbarPage(
   title = 'Nasze dane z google maps',
   tabPanel('Mapa', map_ui, icon = icon(name="glyphicon glyphicon-map-marker",lib="glyphicon")),
-  tabPanel('Czas', ui2, icon = icon(name="glyphicon glyphicon-time",lib="glyphicon")),
-  theme = bslib::bs_theme(bootswatch = "cosmo"),
+  tabPanel('Czas', time_ui, icon = icon(name="glyphicon glyphicon-time",lib="glyphicon")),
+  tabPanel('Transport', trans_ui),
+  theme = bslib::bs_theme(bootswatch = "cerulean"),
   footer = shiny::HTML("
                 <footer class='text-center text-sm-start' style='width:100%;'>
                 <hr>
