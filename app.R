@@ -112,7 +112,7 @@ server <- function(input, output) {
                        popup = ~placeVisit_location_name,
                        color = ~color)
   })
-  #Część Wojtek
+  #Część Wojtek z
   output$linePlot <- renderPlot({
     filtr <- case_when(
       input$typ == "Uczelnia" ~"uni",
