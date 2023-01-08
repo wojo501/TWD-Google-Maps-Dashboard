@@ -7,8 +7,7 @@ library(leaflet)
 map_df <- read.csv("map_data/map_df.csv", encoding = 'UTF-8')
 filterData <- readRDS(file = "ramkiW/data.rds")
 baseFrame <- readRDS(file = "ramkiW/baseFrame.rds")
-#time_df <- 
-#trans_df <- 
+trans_df <- read.csv("dataC", encoding = 'UTF-8')
 
 map_ui <- fluidPage(
   
@@ -90,11 +89,40 @@ time_ui <- fluidPage(
 trans_ui <- fluidPage(
   
   titlePanel("Transport"),
-  "transport czarka"
+  sidebarLayout(
+    sidebarPanel(
+      checkboxGroupInput("transport",
+                         "mode of transport",
+                         choices = c("walk", "bicycle", "car", "tram", "train", "bus", "subway", "plane"),
+                         selected = "walk"),
+      dateRangeInput("date_range_trans", "Select date range:",
+                     start = "2022-12-07", end = "2023-01-05",
+                     min = "2022-12-07", max = "2023-01-05",
+                     format = "yyyy-mm-dd", startview = "month",
+                     autoclose = TRUE)),
+    
+    mainPanel(
+      plotOutput("barPlot")
+    )
+  )
 )
 
 
 server <- function(input, output) {
+  
+  #Czesc Czarek
+  output$barPlot <- renderPlot({
+    trans_df$weekDay <- factor(trans_df$weekDay, levels = c("monday", "tuesday", "wednesday", "friday", "saturday", "sunday"))
+    trans_df %>% 
+      filter(date >= input$date_range_trans[1] & date <= input$date_range_trans[2]) %>%
+      filter(type %in% input$transport) %>% 
+      group_by(weekDay, name) %>% 
+      summarise(sumKilo = sum(distance)) %>% 
+      ggplot(aes(x = weekDay, y = sumKilo, fill = name)) +
+      geom_bar(position="dodge", stat = "identity") +
+      labs(title = "Sum of kilometers we travelled during the weekday", y = "kilometers", x = "weekday", fill = "person") +
+      theme(text=element_text(size = 15))
+  })
   
   #Część Tymek
   output$placeMap <- renderLeaflet({
@@ -158,7 +186,7 @@ app_ui <- navbarPage(
   title = 'Nasze dane z google maps',
   tabPanel('Mapa', map_ui, icon = icon(name="glyphicon glyphicon-map-marker",lib="glyphicon")),
   tabPanel('Czas', time_ui, icon = icon(name="glyphicon glyphicon-time",lib="glyphicon")),
-  tabPanel('Transport', trans_ui),
+  tabPanel('Transport', trans_ui, icon = icon(name="glyphicon glyphicon-road",lib="glyphicon")),
   theme = bslib::bs_theme(bootswatch = "cerulean"),
   footer = shiny::HTML("
                 <footer class='text-center text-sm-start' style='width:100%;'>
