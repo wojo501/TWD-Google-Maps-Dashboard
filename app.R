@@ -4,11 +4,9 @@ library(dplyr)
 library(shinycssloaders)
 library(leaflet)
 
-map_df <- read.csv("map_df.csv", encoding = 'UTF-8')
-filterDataW <- readRDS(file = "ramkiW/dataW.rds")
-filterDataT <- readRDS(file = "ramkiW/dataT.rds")
-filterDataC <- readRDS(file = "ramkiW/dataC.rds")
-baseFrame <- data.frame(weekday = c(1:7), hours = integer(7))
+# map_df <- read.csv("map_df.csv", encoding = 'UTF-8')
+filterData <- readRDS(file = "ramkiW/data.rds")
+baseFrame <- readRDS(file = "ramkiW/baseFrame.rds")
 #time_df <- 
 #trans_df <- 
 
@@ -62,8 +60,8 @@ time_ui <- fluidPage(
     sidebarPanel(
       checkboxGroupInput("osoby",
                          "Osoby do porównania",
-                         choices = c("Osoba1", "Osoba2", "Osoba3"),
-                         selected = "Osoba1"),
+                         choices = c("Wojtek", "Tymek", "Czarek"),
+                         selected = "Wojtek"),
       selectInput("typ", 
                   "Typ spędzanego czasu",
                   choices = c("Uczelnia",
@@ -114,12 +112,12 @@ server <- function(input, output) {
                        popup = ~placeVisit_location_name,
                        color = ~color)
   })
+  #Część Wojtek
   
   observeEvent(input$osoby, {
-    print(paste0("You have chosen: ",input$osoby))
+    print(substr(input$osoby, 1, 1))
   })
   
-  #Część Wojtek
   output$linePlot <- renderPlot({
     filtr <- case_when(
       input$typ == "Uczelnia" ~"uni",
@@ -128,30 +126,30 @@ server <- function(input, output) {
       input$typ == "Inne" ~"other"
     )
     
+    osoby <- substr(input$osoby, 1, 1)
+    
     tydzien <- format(strptime(input$tydzien, '%Y-%m-%d'), format="%Y-%U")
     
-    graphData <- filterDataW %>% 
-      filter(week == tydzien & type == filtr) %>% 
-      select(week, weekday, minutes) %>% 
-      group_by(weekday) %>% 
+    graphData <- filterData %>% 
+      filter(week == tydzien & type == filtr & person %in% osoby) %>% 
+      select(week, weekday, minutes, person) %>% 
+      group_by(weekday, person) %>% 
       summarise(hours = sum(minutes)/60) %>% 
       data.frame()
     
     graphData <- graphData %>% 
-      full_join(baseFrame, by = "weekday") %>% 
+      full_join(baseFrame, by = c("weekday", "person")) %>% 
       mutate(hours = coalesce(hours.x, hours.y)) %>% 
-      select(-c(hours.x, hours.y))
-    
-    # displayedData <- case_when(
-    #   input$osoby=="Osoba1"~graphData,
-    # )
-    
-    plot <- ggplot(data = graphData, aes(x=weekday, y=hours)) +
+      select(-c(hours.x, hours.y)) %>% 
+      filter(person %in% osoby)
+ 
+    plot <- ggplot(data = graphData, aes(x=weekday, y=hours, group = person, colour = person)) +
       geom_line() + 
       geom_point() +
       theme_bw()+
       scale_x_continuous("weekday", labels = graphData$weekday, breaks = graphData$weekday)
     plot
+    
   })
   
 }
