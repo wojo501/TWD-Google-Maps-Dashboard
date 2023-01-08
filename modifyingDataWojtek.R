@@ -4,6 +4,7 @@ library("lubridate")
 library("stringr")
 library("ggplot2")
 library("shiny")
+library("tidyr")
 
 
 
@@ -95,22 +96,44 @@ View(filterData)
 # saveRDS(filterData, file = "ramkiW/dataT.rds")
 # saveRDS(filterData, file = "ramkiW/dataC.rds")
 
+filterDataW <- readRDS(file = "ramkiW/dataW.rds")
+filterDataT <- readRDS(file = "ramkiW/dataT.rds")
+filterDataC <- readRDS(file = "ramkiW/dataC.rds")
+filterDataW <- filterDataW %>% 
+  mutate(person = "W")
+filterDataT <- filterDataT %>% 
+  mutate(person = "T")
+filterDataC <- filterDataC %>% 
+  mutate(person = "C")
+filterData <- rbind(filterDataW, filterDataT, filterDataC)
+saveRDS(filterData, file = "ramkiW/data.rds")
 
-baseFrame <- data.frame(weekday = c(1:7), hours = integer(7))
+View(filterData)
+View(df_merged)
 
+person <- c("W", "T", "C")
+baseFrame <- data.frame(weekday = c(1:7), hours = integer(7)) %>% 
+  expand(weekday, hours, person)
+saveRDS(baseFrame, file = "ramkiW/baseFrame.rds")
+
+View(baseFrame)
+                        
 graphData <- filterData %>% 
-  filter(week == "2023-01" & type == "fun") %>% 
-  select(week, weekday, minutes) %>% 
-  group_by(weekday) %>% 
+  filter(week == "2023-01" & type == "fun" & person %in% c("W", "T")) %>% 
+  select(week, weekday, minutes, person) %>% 
+  group_by(weekday, person) %>% 
   summarise(hours = sum(minutes)/60) %>% 
   data.frame()
+View(graphData)
+View(graphDataW)
 
 graphData <- graphData %>% 
-  full_join(baseFrame, by = "weekday") %>% 
+  full_join(baseFrame, by = c("weekday", "person")) %>% 
   mutate(hours = coalesce(hours.x, hours.y)) %>% 
-  select(-c(hours.x, hours.y))
+  select(-c(hours.x, hours.y)) %>% 
+  filter(person %in% c("W", "T"))
 
-plot <- ggplot(data = graphData, aes(x=weekday, y=hours)) +
+plot <- ggplot(data = graphData, aes(x=weekday, y=hours, group = person, colour = person)) +
   geom_line() + 
   geom_point() +
   theme_bw()+
