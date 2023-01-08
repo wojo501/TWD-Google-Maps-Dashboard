@@ -5,6 +5,10 @@ library(shinycssloaders)
 library(leaflet)
 
 map_df <- read.csv("map_df.csv", encoding = 'UTF-8')
+filterDataW <- readRDS(file = "ramkiW/dataW.rds")
+filterDataT <- readRDS(file = "ramkiW/dataT.rds")
+filterDataC <- readRDS(file = "ramkiW/dataC.rds")
+baseFrame <- data.frame(weekday = c(1:7), hours = integer(7))
 #time_df <- 
 #trans_df <- 
 
@@ -54,7 +58,35 @@ map_ui <- fluidPage(
 time_ui <- fluidPage(
   
   titlePanel("Czas"),
-  "Czas spędzony w miejscach z danej kategorii"
+  sidebarLayout(
+    sidebarPanel(
+      checkboxGroupInput("osoby",
+                         "Osoby do porównania",
+                         choices = c("Osoba1", "Osoba2", "Osoba3"),
+                         selected = "Osoba1"),
+      selectInput("typ", 
+                  "Typ spędzanego czasu",
+                  choices = c("Uczelnia",
+                              "Dom",
+                              "Rozrywka",
+                              "Inne"
+                  )),
+      dateInput(
+        "tydzien",
+        "Wybierz tydzień do analizy",
+        min = "2022-12-12",
+        max = "2023-01-03",
+        value = "2022-12-13",
+        format = "yyyy-mm-dd",
+        startview = "month",
+        weekstart = 1,
+        language = "en"
+      )),
+    
+    mainPanel(
+      plotOutput("linePlot")
+    )
+  )
 )
 
 trans_ui <- fluidPage(
@@ -66,6 +98,7 @@ trans_ui <- fluidPage(
 
 server <- function(input, output) {
   
+  #Część Tymek
   output$placeMap <- renderLeaflet({
     map_df %>% 
       filter(date >= input$date_range[1] & date <= input$date_range[2]) %>%
@@ -80,6 +113,45 @@ server <- function(input, output) {
                        radius = ~number,
                        popup = ~placeVisit_location_name,
                        color = ~color)
+  })
+  
+  observeEvent(input$osoby, {
+    print(paste0("You have chosen: ",input$osoby))
+  })
+  
+  #Część Wojtek
+  output$linePlot <- renderPlot({
+    filtr <- case_when(
+      input$typ == "Uczelnia" ~"uni",
+      input$typ == "Dom" ~"home",
+      input$typ == "Rozrywka" ~"fun",
+      input$typ == "Inne" ~"other"
+    )
+    
+    tydzien <- format(strptime(input$tydzien, '%Y-%m-%d'), format="%Y-%U")
+    
+    graphData <- filterDataW %>% 
+      filter(week == tydzien & type == filtr) %>% 
+      select(week, weekday, minutes) %>% 
+      group_by(weekday) %>% 
+      summarise(hours = sum(minutes)/60) %>% 
+      data.frame()
+    
+    graphData <- graphData %>% 
+      full_join(baseFrame, by = "weekday") %>% 
+      mutate(hours = coalesce(hours.x, hours.y)) %>% 
+      select(-c(hours.x, hours.y))
+    
+    # displayedData <- case_when(
+    #   input$osoby=="Osoba1"~graphData,
+    # )
+    
+    plot <- ggplot(data = graphData, aes(x=weekday, y=hours)) +
+      geom_line() + 
+      geom_point() +
+      theme_bw()+
+      scale_x_continuous("weekday", labels = graphData$weekday, breaks = graphData$weekday)
+    plot
   })
   
 }
