@@ -4,7 +4,7 @@ library(dplyr)
 library(shinycssloaders)
 library(leaflet)
 
-# map_df <- read.csv("map_df.csv", encoding = 'UTF-8')
+map_df <- read.csv("map_data/map_df.csv", encoding = 'UTF-8')
 filterData <- readRDS(file = "ramkiW/data.rds")
 baseFrame <- readRDS(file = "ramkiW/baseFrame.rds")
 #time_df <- 
@@ -113,11 +113,6 @@ server <- function(input, output) {
                        color = ~color)
   })
   #Część Wojtek
-  
-  observeEvent(input$osoby, {
-    print(substr(input$osoby, 1, 1))
-  })
-  
   output$linePlot <- renderPlot({
     filtr <- case_when(
       input$typ == "Uczelnia" ~"uni",
