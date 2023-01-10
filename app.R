@@ -3,6 +3,8 @@ library(shiny)
 library(dplyr)
 library(shinycssloaders)
 library(leaflet)
+library(Cairo)
+options(shiny.usecairo=T)
 
 map_df <- read.csv("map_data/map_df.csv", encoding = 'UTF-8')
 filterData <- readRDS(file = "ramkiW/data.rds")
