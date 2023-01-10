@@ -74,16 +74,16 @@ df_raw_c <- df_raw_c %>%
 
 df_t <- df_raw_t %>%
   mutate(person = "Tymek") %>%
-  mutate(color = '#34a853')
+  mutate(color = '#F4B400')
 
 df_w <- df_raw_w %>%
   mutate(person = "Wojtek") %>%
-  mutate(color = "#1a73e8")
+  mutate(color = "#0F9D58")
 
 
 df_c <- df_raw_c %>%
   mutate(person = "Czarek") %>%
-  mutate(color = "#ea4335")
+  mutate(color = "#4285F4")
 
 df_raw = rbind(df_t, df_w, df_c)
 

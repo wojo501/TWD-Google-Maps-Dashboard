@@ -46,7 +46,8 @@ map_ui <- fluidPage(
   fluidRow(
     column(width = 12,
            shinycssloaders::withSpinner(
-             leafletOutput("placeMap", height = "400px"))
+             leafletOutput("placeMap", height = "400px"),
+             color = "#2fa4e7")
     )
   )
 )
@@ -81,7 +82,9 @@ time_ui <- fluidPage(
       )),
     
     mainPanel(
-      plotOutput("linePlot")
+      shinycssloaders::withSpinner(
+        plotOutput("linePlot"),
+        color = "#2fa4e7")
     )
   )
 )
@@ -102,7 +105,10 @@ trans_ui <- fluidPage(
                      autoclose = TRUE)),
     
     mainPanel(
-      plotOutput("barPlot")
+      shinycssloaders::withSpinner(
+        plotOutput("barPlot"),
+        color = "#2fa4e7")
+      
     )
   )
 )
@@ -121,7 +127,7 @@ server <- function(input, output) {
       ggplot(aes(x = weekDay, y = sumKilo, fill = name)) +
       geom_bar(position="dodge", stat = "identity") +
       scale_fill_manual(
-        values = c(Czarek = "#ea4335", Wojtek = "#1a73e8", Tymek = "#34a853")
+        values = c(Czarek = "#4285F4", Wojtek = "#0F9D58", Tymek = "#F4B400")
       ) +
       labs(title = "Sum of kilometers we travelled during the weekday", y = "kilometers", x = "weekday", fill = "person") +
       theme(text=element_text(size = 15)) +
@@ -143,7 +149,10 @@ server <- function(input, output) {
                        lat = ~lat,
                        radius = ~number,
                        popup = ~placeVisit_location_name,
-                       color = ~color)
+                       color = ~color,
+                       opacity = 0.7,
+                       fillOpacity = 0.3
+                       )
   })
   #Część Wojtek
   
@@ -181,7 +190,7 @@ server <- function(input, output) {
     plot <- ggplot(data = graphData, aes(x=weekday, y=hours, group = person, color = person)) +
       geom_line() + 
       scale_color_manual(
-        values = c(C = "#ea4335", W = "#1a73e8", T = "#34a853")
+        values = c(C = "#4285F4", W = "#0F9D58", T = "#F4B400")
       ) +
       geom_point() +
       theme_minimal()+
