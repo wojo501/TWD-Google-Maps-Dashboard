@@ -5,17 +5,18 @@ library(shinycssloaders)
 library(leaflet)
 
 map_df <- read.csv("map_data/map_df.csv", encoding = 'UTF-8')
-#time_df <- 
-#trans_df <- 
+filterData <- readRDS(file = "ramkiW/data.rds")
+baseFrame <- readRDS(file = "ramkiW/baseFrame.rds")
+trans_df <- read.csv("trans_data/dataC", encoding = 'UTF-8')
 
 map_ui <- fluidPage(
   
-  titlePanel("Mapa odwiedzanych miejsc"),
+  titlePanel("Mapa of visited places"),
   
   fluidRow(
     column(width = 12, 
-    "Mapa odwiedzanych miejsc w danym przedziale czasowym. Im większe kółko, tym 
-    częściej odwiedzane.")),
+    "Map of places we visited in a given date range. The bigger the circle, 
+    the more visited.")),
   
   br(),
   
@@ -54,18 +55,77 @@ map_ui <- fluidPage(
 time_ui <- fluidPage(
   
   titlePanel("Czas"),
-  "Czas spędzony w miejscach z danej kategorii"
+  sidebarLayout(
+    sidebarPanel(
+      checkboxGroupInput("osoby",
+                         "Osoby do porównania",
+                         choices = c("Wojtek", "Tymek", "Czarek"),
+                         selected = "Wojtek"),
+      selectInput("typ", 
+                  "Typ spędzanego czasu",
+                  choices = c("Uczelnia",
+                              "Dom",
+                              "Rozrywka",
+                              "Inne"
+                  )),
+      dateInput(
+        "tydzien",
+        "Wybierz tydzień do analizy",
+        min = "2022-12-12",
+        max = "2023-01-03",
+        value = "2022-12-13",
+        format = "yyyy-mm-dd",
+        startview = "month",
+        weekstart = 1,
+        language = "en"
+      )),
+    
+    mainPanel(
+      plotOutput("linePlot")
+    )
+  )
 )
 
 trans_ui <- fluidPage(
   
   titlePanel("Transport"),
-  "transport czarka"
+  sidebarLayout(
+    sidebarPanel(
+      checkboxGroupInput("transport",
+                         "mode of transport",
+                         choices = c("walk", "bicycle", "car", "tram", "train", "bus", "subway", "plane"),
+                         selected = "walk"),
+      dateRangeInput("date_range_trans", "Select date range:",
+                     start = "2022-12-07", end = "2023-01-05",
+                     min = "2022-12-07", max = "2023-01-05",
+                     format = "yyyy-mm-dd", startview = "month",
+                     autoclose = TRUE)),
+    
+    mainPanel(
+      plotOutput("barPlot")
+    )
+  )
 )
 
 
 server <- function(input, output) {
   
+  #Czesc Czarek
+  output$barPlot <- renderPlot({
+    trans_df$weekDay <- factor(trans_df$weekDay, levels = c("monday", "tuesday", "wednesday", "friday", "saturday", "sunday"))
+    trans_df %>% 
+      filter(date >= input$date_range_trans[1] & date <= input$date_range_trans[2]) %>%
+      filter(type %in% input$transport) %>% 
+      group_by(weekDay, name) %>% 
+      summarise(sumKilo = sum(distance)) %>% 
+      ggplot(aes(x = weekDay, y = sumKilo, fill = name)) +
+      geom_bar(position="dodge", stat = "identity") +
+      labs(title = "Sum of kilometers we travelled during the weekday", y = "kilometers", x = "weekday", fill = "person") +
+      theme(text=element_text(size = 15)) +
+      theme_minimal()
+  })
+  
+  #Część Tymek
   output$placeMap <- renderLeaflet({
     map_df %>% 
       filter(date >= input$date_range[1] & date <= input$date_range[2]) %>%
@@ -73,6 +133,7 @@ server <- function(input, output) {
       group_by(placeVisit_location_name, placeVisit_location_address,
                lat, lng, color) %>%
       summarise(number = n()) %>%
+      mutate(number = ifelse(number > 18, 20, number + 2)) %>%
       leaflet() %>%
       addTiles() %>% 
       addCircleMarkers(lng = ~lng,
@@ -81,14 +142,53 @@ server <- function(input, output) {
                        popup = ~placeVisit_location_name,
                        color = ~color)
   })
+  #Część Wojtek
+  
+  observeEvent(input$osoby, {
+    print(substr(input$osoby, 1, 1))
+  })
+  
+  output$linePlot <- renderPlot({
+    filtr <- case_when(
+      input$typ == "Uczelnia" ~"uni",
+      input$typ == "Dom" ~"home",
+      input$typ == "Rozrywka" ~"fun",
+      input$typ == "Inne" ~"other"
+    )
+    
+    osoby <- substr(input$osoby, 1, 1)
+    
+    tydzien <- format(strptime(input$tydzien, '%Y-%m-%d'), format="%Y-%U")
+    
+    graphData <- filterData %>% 
+      filter(week == tydzien & type == filtr & person %in% osoby) %>% 
+      select(week, weekday, minutes, person) %>% 
+      group_by(weekday, person) %>% 
+      summarise(hours = sum(minutes)/60) %>% 
+      data.frame()
+    
+    graphData <- graphData %>% 
+      full_join(baseFrame, by = c("weekday", "person")) %>% 
+      mutate(hours = coalesce(hours.x, hours.y)) %>% 
+      select(-c(hours.x, hours.y)) %>% 
+      filter(person %in% osoby)
+ 
+    plot <- ggplot(data = graphData, aes(x=weekday, y=hours, group = person, colour = person)) +
+      geom_line() + 
+      geom_point() +
+      theme_bw()+
+      scale_x_continuous("weekday", labels = graphData$weekday, breaks = graphData$weekday)
+    plot
+    
+  })
   
 }
 
 app_ui <- navbarPage(
-  title = 'Nasze dane z google maps',
-  tabPanel('Mapa', map_ui, icon = icon(name="glyphicon glyphicon-map-marker",lib="glyphicon")),
-  tabPanel('Czas', time_ui, icon = icon(name="glyphicon glyphicon-time",lib="glyphicon")),
-  tabPanel('Transport', trans_ui),
+  title = 'Our Google Maps acticity',
+  tabPanel('Map', map_ui, icon = icon(name="glyphicon glyphicon-map-marker",lib="glyphicon")),
+  tabPanel('Time', time_ui, icon = icon(name="glyphicon glyphicon-time",lib="glyphicon")),
+  tabPanel('Transport', trans_ui, icon = icon(name="glyphicon glyphicon-road",lib="glyphicon")),
   theme = bslib::bs_theme(bootswatch = "cerulean"),
   footer = shiny::HTML("
                 <footer class='text-center text-sm-start' style='width:100%;'>
