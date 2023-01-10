@@ -60,7 +60,7 @@ time_ui <- fluidPage(
       checkboxGroupInput("osoby",
                          "Osoby do porównania",
                          choices = c("Wojtek", "Tymek", "Czarek"),
-                         selected = "Wojtek"),
+                         selected = c("Wojtek", "Tymek", "Czarek")),
       selectInput("typ", 
                   "Typ spędzanego czasu",
                   choices = c("Uczelnia",
@@ -120,6 +120,9 @@ server <- function(input, output) {
       summarise(sumKilo = sum(distance)) %>% 
       ggplot(aes(x = weekDay, y = sumKilo, fill = name)) +
       geom_bar(position="dodge", stat = "identity") +
+      scale_fill_manual(
+        values = c(Czarek = "#ea4335", Wojtek = "#1a73e8", Tymek = "#34a853")
+      ) +
       labs(title = "Sum of kilometers we travelled during the weekday", y = "kilometers", x = "weekday", fill = "person") +
       theme(text=element_text(size = 15)) +
       theme_minimal()
@@ -172,11 +175,16 @@ server <- function(input, output) {
       mutate(hours = coalesce(hours.x, hours.y)) %>% 
       select(-c(hours.x, hours.y)) %>% 
       filter(person %in% osoby)
- 
-    plot <- ggplot(data = graphData, aes(x=weekday, y=hours, group = person, colour = person)) +
+  
+    graphData
+    
+    plot <- ggplot(data = graphData, aes(x=weekday, y=hours, group = person, color = person)) +
       geom_line() + 
+      scale_color_manual(
+        values = c(C = "#ea4335", W = "#1a73e8", T = "#34a853")
+      ) +
       geom_point() +
-      theme_bw()+
+      theme_minimal()+
       scale_x_continuous("weekday", labels = graphData$weekday, breaks = graphData$weekday)
     plot
     
@@ -194,7 +202,7 @@ app_ui <- navbarPage(
                 <footer class='text-center text-sm-start' style='width:100%;'>
                 <hr>
                 <p class='text-center' style='font-size:12px;'>
-                  Techniki Wizualizacji Danych 2022
+                  Data Visualization Techniques 2023 
                 </p>
                 </footer>
                 "),
