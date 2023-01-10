@@ -13,7 +13,7 @@ trans_df <- read.csv("trans_data/dataC", encoding = 'UTF-8')
 
 map_ui <- fluidPage(
   
-  titlePanel("Mapa of visited places"),
+  titlePanel("Map of visited places"),
   
   fluidRow(
     column(width = 12, 
@@ -57,23 +57,27 @@ map_ui <- fluidPage(
 
 time_ui <- fluidPage(
   
-  titlePanel("Czas"),
+  titlePanel("Time spent"),
+  fluidRow(
+    column(width = 12, 
+           "Hours spent in places from certain category.")),
+  br(),
   sidebarLayout(
     sidebarPanel(
       checkboxGroupInput("osoby",
-                         "Osoby do porównania",
+                         "Select persons:",
                          choices = c("Wojtek", "Tymek", "Czarek"),
                          selected = c("Wojtek", "Tymek", "Czarek")),
       selectInput("typ", 
-                  "Typ spędzanego czasu",
-                  choices = c("Uczelnia",
-                              "Dom",
-                              "Rozrywka",
-                              "Inne"
+                  "Select category:",
+                  choices = c("University",
+                              "Home",
+                              "Entertainment",
+                              "Other"
                   )),
       dateInput(
         "tydzien",
-        "Wybierz tydzień do analizy",
+        "Choose week:",
         min = "2022-12-12",
         max = "2023-01-03",
         value = "2022-12-13",
@@ -94,10 +98,15 @@ time_ui <- fluidPage(
 trans_ui <- fluidPage(
   
   titlePanel("Transport"),
+  fluidRow(
+    column(width = 12, 
+           "Sum of kilometers we travelled during the weekday.")),
+  br(),
+  
   sidebarLayout(
     sidebarPanel(
       checkboxGroupInput("transport",
-                         "mode of transport",
+                         "Select modes of transport:",
                          choices = c("walk", "bicycle", "car", "tram", "train", "bus", "subway", "plane"),
                          selected = "walk"),
       dateRangeInput("date_range_trans", "Select date range:",
@@ -131,8 +140,9 @@ server <- function(input, output) {
       scale_fill_manual(
         values = c(Czarek = "#4285F4", Wojtek = "#0F9D58", Tymek = "#F4B400")
       ) +
-      labs(title = "Sum of kilometers we travelled during the weekday", y = "kilometers", x = "weekday", fill = "person") +
-      theme(text=element_text(size = 15)) +
+      labs(title = "", y = "kilometers", x = "Weekday", fill = "person") +
+      theme(text=element_text(size = 15),
+            legend.title = element_blank()) +
       theme_minimal()
   })
   
@@ -164,10 +174,10 @@ server <- function(input, output) {
   
   output$linePlot <- renderPlot({
     filtr <- case_when(
-      input$typ == "Uczelnia" ~"uni",
-      input$typ == "Dom" ~"home",
-      input$typ == "Rozrywka" ~"fun",
-      input$typ == "Inne" ~"other"
+      input$typ == "University" ~"uni",
+      input$typ == "Home" ~"home",
+      input$typ == "Entertainment" ~"fun",
+      input$typ == "Other" ~"other"
     )
     
     osoby <- substr(input$osoby, 1, 1)
@@ -192,11 +202,14 @@ server <- function(input, output) {
     plot <- ggplot(data = graphData, aes(x=weekday, y=hours, group = person, color = person)) +
       geom_line() + 
       scale_color_manual(
-        values = c(C = "#4285F4", W = "#0F9D58", T = "#F4B400")
+        values = c(C = "#4285F4", W = "#0F9D58", T = "#F4B400"),
+        labels = c("Czarek", "Wojtek", "Tymek")
       ) +
       geom_point() +
       theme_minimal()+
-      scale_x_continuous("weekday", labels = graphData$weekday, breaks = graphData$weekday)
+      scale_x_continuous("Weekday", labels = graphData$weekday, breaks = graphData$weekday) +
+      labs(y = "Hours") +
+      theme(legend.title = element_blank())
     plot
     
   })
@@ -204,7 +217,7 @@ server <- function(input, output) {
 }
 
 app_ui <- navbarPage(
-  title = 'Our Google Maps acticity',
+  title = 'Our Google Maps activity',
   tabPanel('Map', map_ui, icon = icon(name="glyphicon glyphicon-map-marker",lib="glyphicon")),
   tabPanel('Time', time_ui, icon = icon(name="glyphicon glyphicon-time",lib="glyphicon")),
   tabPanel('Transport', trans_ui, icon = icon(name="glyphicon glyphicon-road",lib="glyphicon")),
