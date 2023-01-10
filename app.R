@@ -4,7 +4,7 @@ library(dplyr)
 library(shinycssloaders)
 library(leaflet)
 
-map_df <- read.csv("map_df.csv", encoding = 'UTF-8')
+map_df <- read.csv("map_data/map_df.csv", encoding = 'UTF-8')
 #time_df <- 
 #trans_df <- 
 
