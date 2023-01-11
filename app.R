@@ -129,10 +129,11 @@ server <- function(input, output) {
   
   #Czesc Czarek
   output$barPlot <- renderPlot({
-    trans_df$weekDay <- factor(trans_df$weekDay, levels = c("monday", "tuesday", "wednesday", "friday", "saturday", "sunday"))
+    trans_df$weekDay <- factor(trans_df$weekDay, levels = c("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"))
     trans_df %>% 
       filter(date >= input$date_range_trans[1] & date <= input$date_range_trans[2]) %>%
-      filter(type %in% input$transport) %>% 
+      filter(type %in% input$transport) %>%
+      mutate(distance = distance/1000) %>%
       group_by(weekDay, name) %>% 
       summarise(sumKilo = sum(distance)) %>% 
       ggplot(aes(x = weekDay, y = sumKilo, fill = name)) +
