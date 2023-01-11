@@ -141,10 +141,9 @@ server <- function(input, output) {
       scale_fill_manual(
         values = c(Czarek = "#4285F4", Wojtek = "#0F9D58", Tymek = "#F4B400")
       ) +
-      labs(title = "", y = "kilometers", x = "Weekday", fill = "person") +
-      theme(text=element_text(size = 15),
-            legend.title = element_blank()) +
-      theme_minimal()
+      labs(title = "", y = "kilometers", x = "", fill = "person", ) +
+      theme_minimal() +
+      theme(axis.text=element_text(size=10.5), legend.title = element_blank())
   })
   
   #Część Tymek
