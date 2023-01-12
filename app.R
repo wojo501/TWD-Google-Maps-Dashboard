@@ -4,12 +4,60 @@ library(dplyr)
 library(shinycssloaders)
 library(leaflet)
 library(Cairo)
+library(shinyWidgets)
+library(htmltools)
+library(shinyBS)
 options(shiny.usecairo=T)
 
 map_df <- read.csv("map_data/map_df.csv", encoding = 'UTF-8')
 filterData <- readRDS(file = "ramkiW/data.rds")
 baseFrame <- readRDS(file = "ramkiW/baseFrame.rds")
 trans_df <- read.csv("trans_data/dataC", encoding = 'UTF-8')
+
+info_ui <- fluidPage(
+  
+  h1(
+    "About the project",
+    align = "center",
+    style = "color: #2fa4e7;"
+  ),
+  
+  fluidRow(
+    column(width = 3),
+    column(width = 6, 
+           "Welcome to our webpage. This shiny app was created for Data 
+           Visualisation Techniques by 3 WUT students. For over a month we have
+           been collecting data using Google Maps, which had access to our
+           location 24 hours a day. Thanks to this, we could acquire information
+           such as time spent in a certain place or mean of transport used.
+           In our visualizations each person has a unique, assigned color: 
+           ",
+           style = "text-align: justify;"),
+    column(width = 3)),
+  br(),
+  
+  fluidRow(
+    column(width = 4,
+           img(src = 'czarek.png', height = '200px', style = "display: block; margin: 0 auto;"),
+           br(),
+           tags$figcaption("Czarek", align = 'center', style = "font-size: 30px;")
+
+    ),
+    column(width = 4,
+           img(src = 'tymek.png', height = '200px', style = "display: block; margin: 0 auto;"),
+           br(),
+           tags$figcaption("Tymek", align = 'center', style = "font-size: 30px;")
+           
+    ),
+    column(width = 4,
+           img(src = 'wojtek.png', height = '200px', style = "display: block; margin: 0 auto;"),
+           br(),
+           tags$figcaption("Wojtek", align = 'center', style = "font-size: 30px;")
+           
+    )
+  ),
+  
+)
 
 map_ui <- fluidPage(
   
@@ -22,34 +70,28 @@ map_ui <- fluidPage(
   
   br(),
   
-  wellPanel(
-    fluidRow(
-      column(width = 6,
-             checkboxGroupInput(
-               inputId = "persons",
-               label = "Select persons:",
-               choices = c("Tymek", "Czarek", "Wojtek"),
-               selected = c("Tymek", "Czarek", "Wojtek"),
-               inline = TRUE)
-      ),
-      column(width = 6,
-             dateRangeInput("date_range", "Select date range:",
-                            start = "2022-12-07", end = "2023-01-05",
-                            min = "2022-12-07", max = "2023-01-05",
-                            format = "yyyy-mm-dd", startview = "month",
-                            autoclose = TRUE)
-             
-      )
-    )
-  ),
-  
-  br(),
-  
-  fluidRow(
-    column(width = 12,
-           shinycssloaders::withSpinner(
-             leafletOutput("placeMap", height = "400px"),
-             color = "#2fa4e7")
+  sidebarLayout(
+    sidebarPanel(
+      checkboxGroupButtons(
+        inputId = "persons",
+        label = "Select persons:",
+        choices = c("Czarek", "Tymek", "Wojtek"),
+        selected = c("Czarek", "Tymek", "Wojtek"),
+        individual = TRUE,
+        status = c("primary", "secondary" , "success")
+      
+        ),
+        
+      dateRangeInput("date_range", "Select date range:",
+                    start = "2022-12-07", end = "2023-01-05",
+                    min = "2022-12-07", max = "2023-01-05",
+                    format = "yyyy-mm-dd", startview = "month",
+                    autoclose = TRUE)),
+    
+    mainPanel(
+      shinycssloaders::withSpinner(
+        leafletOutput("placeMap", height = "500px"),
+        color = "#2fa4e7")
     )
   )
 )
@@ -64,10 +106,15 @@ time_ui <- fluidPage(
   br(),
   sidebarLayout(
     sidebarPanel(
-      checkboxGroupInput("osoby",
-                         "Select persons:",
-                         choices = c("Wojtek", "Tymek", "Czarek"),
-                         selected = c("Wojtek", "Tymek", "Czarek")),
+      checkboxGroupButtons(
+        inputId = "osoby",
+        label = "Select persons:",
+        choices = c("Czarek", "Tymek", "Wojtek"),
+        selected = c("Czarek", "Tymek", "Wojtek"),
+        individual = TRUE,
+        status = c("primary", "secondary" , "success")
+        
+      ),
       selectInput("typ", 
                   "Select category:",
                   choices = c("University",
@@ -202,14 +249,14 @@ server <- function(input, output) {
     plot <- ggplot(data = graphData, aes(x=weekday, y=hours, group = person, color = person)) +
       geom_line() + 
       scale_color_manual(
-        values = c(C = "#4285F4", W = "#0F9D58", T = "#F4B400"),
-        labels = c("Czarek", "Wojtek", "Tymek")
+        values = c(C = "#4285F4", W = "#0F9D58", T = "#F4B400")
       ) +
       geom_point() +
       theme_minimal()+
       scale_x_continuous("Weekday", labels = graphData$weekday, breaks = graphData$weekday) +
       labs(y = "Hours") +
-      theme(legend.title = element_blank())
+      theme(legend.title = element_blank(),
+            legend.position = "none")
     plot
     
   })
@@ -217,11 +264,16 @@ server <- function(input, output) {
 }
 
 app_ui <- navbarPage(
-  title = 'Our Google Maps activity',
+  title = '',
+  tabPanel('About', info_ui, icon = icon(name="glyphicon glyphicon-home",lib="glyphicon")),
   tabPanel('Map', map_ui, icon = icon(name="glyphicon glyphicon-map-marker",lib="glyphicon")),
   tabPanel('Time', time_ui, icon = icon(name="glyphicon glyphicon-time",lib="glyphicon")),
   tabPanel('Transport', trans_ui, icon = icon(name="glyphicon glyphicon-road",lib="glyphicon")),
-  theme = bslib::bs_theme(bootswatch = "cerulean"),
+  theme = bslib::bs_theme(bootswatch = "cerulean",
+                          primary = '#4285F4',
+                          secondary = '#F4B400',
+                          success = '#0F9D58',
+                          ),
   footer = shiny::HTML("
                 <footer class='text-center text-sm-start' style='width:100%;'>
                 <hr>
