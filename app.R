@@ -32,7 +32,7 @@ info_ui <- fluidPage(
            such as time spent in a certain place or mean of transport used.
            In our visualizations each person has a unique, assigned color: 
            ",
-           style = "text-align: justify;"),
+           style = "text-align: center;"),
     column(width = 3)),
   br(),
   
@@ -70,30 +70,44 @@ map_ui <- fluidPage(
   
   br(),
   
-  sidebarLayout(
-    sidebarPanel(
-      checkboxGroupButtons(
-        inputId = "persons",
-        label = "Select persons:",
-        choices = c("Czarek", "Tymek", "Wojtek"),
-        selected = c("Czarek", "Tymek", "Wojtek"),
-        individual = TRUE,
-        status = c("primary", "secondary" , "success")
-      
-        ),
-        
-      dateRangeInput("date_range", "Select date range:",
-                    start = "2022-12-07", end = "2023-01-05",
-                    min = "2022-12-07", max = "2023-01-05",
-                    format = "yyyy-mm-dd", startview = "month",
-                    autoclose = TRUE)),
+  fluidRow(
+    column(width = 4,
+           wellPanel(checkboxGroupButtons(
+             inputId = "persons",
+             label = "Select persons:",
+             choices = c("Czarek", "Tymek", "Wojtek"),
+             selected = c("Czarek", "Tymek", "Wojtek"),
+             individual = TRUE,
+             status = c("primary", "secondary" , "success")
+             
+           ),
+           
+           dateRangeInput("date_range", "Select date range:",
+                          start = "2022-12-07", end = "2023-01-05",
+                          min = "2022-12-07", max = "2023-01-05",
+                          format = "yyyy-mm-dd", startview = "month",
+                          autoclose = TRUE)),
+           br(),
+           "Thanks to the interactivity of the map, you can easily check where
+           each person spent new year's eve or which place has he visited most often.
+           Of course, everybodys most visited places are home (or a dorm) and the university.
+           As you can see, the person who travelled the most is Wojtek. He has 
+           visited such places as Berlin, Hamburg or Tri-City. Unlike him, Tymek
+           has never left Masovia and the furthest place he has been to is Piaseczno
+           county. Because of it, the center of Warsaw is mostly covered with yellow markers. 
+           Coming to Czarek, it can be seen that he lives outside the city and he 
+           uses Warsaw East Station a lot. On winter holidays he went to Sokołów and Toruń.
+           Are you interested which places we visit and how often? Use our map 
+           and try to find out yourself!",
+           style = "text-align: justify;"
+           
+    ),
+    column(width = 8,
+           shinycssloaders::withSpinner(
+             leafletOutput("placeMap", height = "500px"),
+             color = "#2fa4e7"))
     
-    mainPanel(
-      shinycssloaders::withSpinner(
-        leafletOutput("placeMap", height = "500px"),
-        color = "#2fa4e7")
-    )
-  )
+  ),
 )
 
 
