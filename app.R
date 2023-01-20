@@ -3,75 +3,142 @@ library(shiny)
 library(dplyr)
 library(shinycssloaders)
 library(leaflet)
+library(Cairo)
+library(shinyWidgets)
+library(htmltools)
+library(shinyBS)
+options(shiny.usecairo=T)
 
 map_df <- read.csv("map_data/map_df.csv", encoding = 'UTF-8')
 filterData <- readRDS(file = "ramkiW/data.rds")
 baseFrame <- readRDS(file = "ramkiW/baseFrame.rds")
-#time_df <- 
-#trans_df <- 
+trans_df <- read.csv("trans_data/dataC", encoding = 'UTF-8')
 
-map_ui <- fluidPage(
+info_ui <- fluidPage(
   
-  titlePanel("Mapa odwiedzanych miejsc"),
+  h1(
+    "About the project",
+    align = "center",
+    style = "color: #2fa4e7;"
+  ),
   
   fluidRow(
-    column(width = 12, 
-    "Mapa odwiedzanych miejsc w danym przedziale czasowym. Im większe kółko, tym 
-    częściej odwiedzane.")),
-  
+    column(width = 3),
+    column(width = 6, 
+           "Welcome to our webpage. This shiny app was created for Data 
+           Visualisation Techniques by 3 WUT students. For over a month we have
+           been collecting data using Google Maps, which had access to our
+           location 24 hours a day. Thanks to this, we could acquire information
+           such as time spent in a certain place or mean of transport used.
+           In our visualizations each person has a unique, assigned color: 
+           ",
+           style = "text-align: center;"),
+    column(width = 3)),
   br(),
   
-  wellPanel(
-    fluidRow(
-      column(width = 6,
-             checkboxGroupInput(
-               inputId = "persons",
-               label = "Select persons:",
-               choices = c("Tymek", "Czarek", "Wojtek"),
-               selected = c("Tymek", "Czarek", "Wojtek"),
-               inline = TRUE)
-      ),
-      column(width = 6,
-             dateRangeInput("date_range", "Select date range:",
-                            start = "2022-12-07", end = "2023-01-05",
-                            min = "2022-12-07", max = "2023-01-05",
-                            format = "yyyy-mm-dd", startview = "month",
-                            autoclose = TRUE)
-             
-      )
+  fluidRow(
+    column(width = 4,
+           img(src = 'czarek.png', height = '200px', style = "display: block; margin: 0 auto;"),
+           br(),
+           tags$figcaption("Czarek", align = 'center', style = "font-size: 30px;")
+
+    ),
+    column(width = 4,
+           img(src = 'tymek.png', height = '200px', style = "display: block; margin: 0 auto;"),
+           br(),
+           tags$figcaption("Tymek", align = 'center', style = "font-size: 30px;")
+           
+    ),
+    column(width = 4,
+           img(src = 'wojtek.png', height = '200px', style = "display: block; margin: 0 auto;"),
+           br(),
+           tags$figcaption("Wojtek", align = 'center', style = "font-size: 30px;")
+           
     )
   ),
   
+)
+
+map_ui <- fluidPage(
+  
+  titlePanel("Map of visited places"),
+  
+  fluidRow(
+    column(width = 12, 
+    "Map of places we visited in a given date range. The bigger the circle, 
+    the more visited.")),
+  
   br(),
   
   fluidRow(
-    column(width = 12,
+    column(width = 4,
+           wellPanel(checkboxGroupButtons(
+             inputId = "persons",
+             label = "Select persons:",
+             choices = c("Czarek", "Tymek", "Wojtek"),
+             selected = c("Czarek", "Tymek", "Wojtek"),
+             individual = TRUE,
+             status = c("primary", "secondary" , "success")
+             
+           ),
+           
+           dateRangeInput("date_range", "Select date range:",
+                          start = "2022-12-07", end = "2023-01-05",
+                          min = "2022-12-07", max = "2023-01-05",
+                          format = "yyyy-mm-dd", startview = "month",
+                          autoclose = TRUE)),
+           br(),
+           "Thanks to the interactivity of the map, you can easily check where
+           each person spent new year's eve or which place has he visited most often.
+           Of course, everybodys most visited places are home (or a dorm) and the university.
+           As you can see, the person who travelled the most is Wojtek. He has 
+           visited such places as Berlin, Hamburg or Tri-City. Unlike him, Tymek
+           has never left Masovia and the furthest place he has been to is Piaseczno
+           county. Because of it, the center of Warsaw is mostly covered with yellow markers. 
+           Coming to Czarek, it can be seen that he lives outside the city and he 
+           uses Warsaw East Station a lot. On winter holidays he went to Sokołów and Toruń.
+           Are you interested which places we visit and how often? Use our map 
+           and try to find out yourself!",
+           style = "text-align: justify;"
+           
+    ),
+    column(width = 8,
            shinycssloaders::withSpinner(
-             leafletOutput("placeMap", height = "400px"))
-    )
-  )
+             leafletOutput("placeMap", height = "500px"),
+             color = "#2fa4e7"))
+    
+  ),
 )
 
 
 time_ui <- fluidPage(
   
-  titlePanel("Czas"),
+  titlePanel("Time spent"),
+  fluidRow(
+    column(width = 12, 
+           "Hours spent in places from certain category.")),
+  br(),
   sidebarLayout(
     sidebarPanel(
-      checkboxGroupInput("osoby",
-                         "Osoby do porównania",
-                         choices = c("Wojtek", "Tymek", "Czarek"),
-                         selected = "Wojtek"),
+      checkboxGroupButtons(
+        inputId = "osoby",
+        label = "Select persons:",
+        choices = c("Czarek", "Tymek", "Wojtek"),
+        selected = c("Czarek", "Tymek", "Wojtek"),
+        individual = TRUE,
+        status = c("primary", "secondary" , "success")
+        
+      ),
       selectInput("typ", 
-                  "Typ spędzanego czasu",
-                  choices = c("Uczelnia",
-                              "Dom",
-                              "Rozrywka",
-                              "Inne"
+                  "Select category:",
+                  choices = c("University",
+                              "Home",
+                              "Entertainment",
+                              "Other"
                   )),
       dateInput(
         "tydzien",
-        "Wybierz tydzień do analizy",
+        "Choose week:",
         min = "2022-12-12",
         max = "2023-01-03",
         value = "2022-12-13",
@@ -82,7 +149,9 @@ time_ui <- fluidPage(
       )),
     
     mainPanel(
-      plotOutput("linePlot")
+      shinycssloaders::withSpinner(
+        plotOutput("linePlot"),
+        color = "#2fa4e7")
     )
   )
 )
@@ -90,11 +159,53 @@ time_ui <- fluidPage(
 trans_ui <- fluidPage(
   
   titlePanel("Transport"),
-  "transport czarka"
+  fluidRow(
+    column(width = 12, 
+           "Sum of kilometers we travelled during the weekday.")),
+  br(),
+  
+  sidebarLayout(
+    sidebarPanel(
+      checkboxGroupInput("transport",
+                         "Select modes of transport:",
+                         choices = c("walk", "bicycle", "car", "tram", "train", "bus", "subway", "plane"),
+                         selected = "walk"),
+      dateRangeInput("date_range_trans", "Select date range:",
+                     start = "2022-12-07", end = "2023-01-05",
+                     min = "2022-12-07", max = "2023-01-05",
+                     format = "yyyy-mm-dd", startview = "month",
+                     autoclose = TRUE)),
+    
+    mainPanel(
+      shinycssloaders::withSpinner(
+        plotOutput("barPlot"),
+        color = "#2fa4e7")
+      
+    )
+  )
 )
 
 
 server <- function(input, output) {
+  
+  #Czesc Czarek
+  output$barPlot <- renderPlot({
+    trans_df$weekDay <- factor(trans_df$weekDay, levels = c("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"))
+    trans_df %>% 
+      filter(date >= input$date_range_trans[1] & date <= input$date_range_trans[2]) %>%
+      filter(type %in% input$transport) %>%
+      mutate(distance = distance/1000) %>%
+      group_by(weekDay, name) %>% 
+      summarise(sumKilo = sum(distance)) %>% 
+      ggplot(aes(x = weekDay, y = sumKilo, fill = name)) +
+      geom_bar(position="dodge", stat = "identity") +
+      scale_fill_manual(
+        values = c(Czarek = "#4285F4", Wojtek = "#0F9D58", Tymek = "#F4B400")
+      ) +
+      labs(title = "", y = "kilometers", x = "", fill = "person", ) +
+      theme_minimal() +
+      theme(axis.text=element_text(size=10.5), legend.title = element_blank())
+  })
   
   #Część Tymek
   output$placeMap <- renderLeaflet({
@@ -104,21 +215,25 @@ server <- function(input, output) {
       group_by(placeVisit_location_name, placeVisit_location_address,
                lat, lng, color) %>%
       summarise(number = n()) %>%
+      mutate(number = ifelse(number > 18, 20, number + 2)) %>%
       leaflet() %>%
       addTiles() %>% 
       addCircleMarkers(lng = ~lng,
                        lat = ~lat,
                        radius = ~number,
                        popup = ~placeVisit_location_name,
-                       color = ~color)
+                       color = ~color,
+                       opacity = 0.7,
+                       fillOpacity = 0.3
+                       )
   })
   #Część Wojtek z
   output$linePlot <- renderPlot({
     filtr <- case_when(
-      input$typ == "Uczelnia" ~"uni",
-      input$typ == "Dom" ~"home",
-      input$typ == "Rozrywka" ~"fun",
-      input$typ == "Inne" ~"other"
+      input$typ == "University" ~"uni",
+      input$typ == "Home" ~"home",
+      input$typ == "Entertainment" ~"fun",
+      input$typ == "Other" ~"other"
     )
     
     osoby <- substr(input$osoby, 1, 1)
@@ -137,12 +252,20 @@ server <- function(input, output) {
       mutate(hours = coalesce(hours.x, hours.y)) %>% 
       select(-c(hours.x, hours.y)) %>% 
       filter(person %in% osoby)
- 
-    plot <- ggplot(data = graphData, aes(x=weekday, y=hours, group = person, colour = person)) +
+  
+    graphData
+    
+    plot <- ggplot(data = graphData, aes(x=weekday, y=hours, group = person, color = person)) +
       geom_line() + 
+      scale_color_manual(
+        values = c(C = "#4285F4", W = "#0F9D58", T = "#F4B400")
+      ) +
       geom_point() +
-      theme_bw()+
-      scale_x_continuous("weekday", labels = graphData$weekday, breaks = graphData$weekday)
+      theme_minimal()+
+      scale_x_continuous("Weekday", labels = graphData$weekday, breaks = graphData$weekday) +
+      labs(y = "Hours") +
+      theme(legend.title = element_blank(),
+            legend.position = "none")
     plot
     
   })
@@ -150,16 +273,21 @@ server <- function(input, output) {
 }
 
 app_ui <- navbarPage(
-  title = 'Nasze dane z google maps',
-  tabPanel('Mapa', map_ui, icon = icon(name="glyphicon glyphicon-map-marker",lib="glyphicon")),
-  tabPanel('Czas', time_ui, icon = icon(name="glyphicon glyphicon-time",lib="glyphicon")),
-  tabPanel('Transport', trans_ui),
-  theme = bslib::bs_theme(bootswatch = "cerulean"),
+  title = '',
+  tabPanel('About', info_ui, icon = icon(name="glyphicon glyphicon-home",lib="glyphicon")),
+  tabPanel('Map', map_ui, icon = icon(name="glyphicon glyphicon-map-marker",lib="glyphicon")),
+  tabPanel('Time', time_ui, icon = icon(name="glyphicon glyphicon-time",lib="glyphicon")),
+  tabPanel('Transport', trans_ui, icon = icon(name="glyphicon glyphicon-road",lib="glyphicon")),
+  theme = bslib::bs_theme(bootswatch = "cerulean",
+                          primary = '#4285F4',
+                          secondary = '#F4B400',
+                          success = '#0F9D58',
+                          ),
   footer = shiny::HTML("
                 <footer class='text-center text-sm-start' style='width:100%;'>
                 <hr>
                 <p class='text-center' style='font-size:12px;'>
-                  Techniki Wizualizacji Danych 2022
+                  Data Visualization Techniques 2023 
                 </p>
                 </footer>
                 "),
