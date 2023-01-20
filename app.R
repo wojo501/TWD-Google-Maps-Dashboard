@@ -227,12 +227,7 @@ server <- function(input, output) {
                        fillOpacity = 0.3
                        )
   })
-  #Część Wojtek
-  
-  observeEvent(input$osoby, {
-    print(substr(input$osoby, 1, 1))
-  })
-  
+  #Część Wojtek z
   output$linePlot <- renderPlot({
     filtr <- case_when(
       input$typ == "University" ~"uni",

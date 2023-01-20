@@ -8,14 +8,14 @@ library("tidyr")
 
 
 
-# decCsv <- as.data.frame(read.csv(file = "raw_data/december_data_w", encoding = "UTF-8"))
-# janCsv <- as.data.frame(read.csv(file = "raw_data/january_data_w", encoding = "UTF-8"))
+decCsv <- as.data.frame(read.csv(file = "raw_data/december_data_w", encoding = "UTF-8"))
+janCsv <- as.data.frame(read.csv(file = "raw_data/january_data_w", encoding = "UTF-8"))
 # 
 # decCsv <- as.data.frame(read.csv(file = "raw_data/december_data_t", encoding = "UTF-8"))
 # janCsv <- as.data.frame(read.csv(file = "raw_data/january_data_t", encoding = "UTF-8"))
-
-decCsv <- as.data.frame(read.csv(file = "raw_data/december_data_c", encoding = "UTF-8"))
-janCsv <- as.data.frame(read.csv(file = "raw_data/january_data_c", encoding = "UTF-8"))
+# 
+# decCsv <- as.data.frame(read.csv(file = "raw_data/december_data_c", encoding = "UTF-8"))
+# janCsv <- as.data.frame(read.csv(file = "raw_data/january_data_c", encoding = "UTF-8"))
 
 
 
@@ -40,15 +40,37 @@ filterData$timeEnd <- paste(substring(filterData$timeEnd, 1, 10), substring(filt
 
 filterData$timeStart <- strptime(filterData$timeStart, '%Y-%m-%d %H:%M')
 filterData$timeEnd <- strptime(filterData$timeEnd, '%Y-%m-%d %H:%M')
+filterData <- filterData %>% 
+  mutate(time_diff = as.integer(difftime(timeEnd, timeStart, units = "days")))
+
+while(filterData %>% filter(time_diff != 0) %>% summarise(n()) %>% first() > 0){
+  diffDay <- filterData %>%  
+    filter(time_diff != 0) %>% 
+    bind_rows(as.data.frame(.) %>% select(name, timeStart, timeEnd, time_diff) %>% 
+                mutate(timeStart = timeStart, timeEnd = as.Date(timeStart) + 1, time_diff = as.integer(difftime(timeEnd, timeStart, units = "days")), part = "new"), as.data.frame(.) %>% 
+                select(name, timeStart, timeEnd, time_diff) %>% 
+                mutate(timeStart = as.Date(timeStart)+1, timeEnd = timeEnd, time_diff = as.integer(difftime(timeEnd, timeStart, units = "days")), part = "new")) %>% 
+    filter(part == "new") %>% 
+    select(-part)
+  
+  filterData <- filterData %>% 
+    filter(time_diff == 0) %>% 
+    bind_rows(diffDay)
+}
+
+
+View(filterData %>% filter(time_diff = 0))
+
 filterData <- filterData %>%
   mutate(minutes = as.numeric(difftime(timeEnd, timeStart))) %>% 
   mutate(week = format(filterData$timeStart, format="%Y-%U")) %>% 
   mutate(weekday = wday(timeStart))
 
+
 #stringi Wojtek
-# home <- c("mikrus", "cieplewo", "łęgowo")
-# uni <- c("university", "akademik", "lincoln", "politechnika", "faculty", "central")
-# fun <- c("unii", "fryzjer", "rostock", "museum", "suntago", "royal", "church", "polny", "game", "frankfurt", "hamburg")
+home <- c("mikrus", "cieplewo", "łęgowo")
+uni <- c("university", "akademik", "lincoln", "politechnika", "faculty", "central")
+fun <- c("unii", "fryzjer", "rostock", "museum", "suntago", "royal", "church", "polny", "game", "frankfurt", "hamburg")
 
 # #stringi Tymek
 # home <- c("konstancin", "home")
@@ -60,9 +82,9 @@ filterData <- filterData %>%
 # other <- c("biedronka", "stara", "lidl")
 # 
 # #stringi Czarek
-home <- c("kazimierów", "willa", "repkowska", "sokołowska")
-uni <- c("gmach", "university")
-fun <- c("cybermachina", "gato", "kredens", "kuchnia", "manekin", "muzeum", "cafe", "restauracja")
+# home <- c("kazimierów", "willa", "repkowska", "sokołowska")
+# uni <- c("gmach", "university")
+# fun <- c("cybermachina", "gato", "kredens", "kuchnia", "manekin", "muzeum", "cafe", "restauracja")
 
 
 homes <- filterData[sapply(strsplit(filterData$name, split=" "), function(str) any(home %in% str)), ] %>% 
