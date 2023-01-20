@@ -119,7 +119,7 @@ saveRDS(filterData, file = "ramkiW/dataW.rds")
 saveRDS(filterData, file = "ramkiW/dataT.rds")
 saveRDS(filterData, file = "ramkiW/dataC.rds")
 
-
+View(filterDataC)
 filterDataW <- readRDS(file = "ramkiW/dataW.rds")
 filterDataT <- readRDS(file = "ramkiW/dataT.rds")
 filterDataC <- readRDS(file = "ramkiW/dataC.rds")
