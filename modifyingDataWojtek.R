@@ -8,11 +8,11 @@ library("tidyr")
 
 
 
-# decCsv <- as.data.frame(read.csv(file = "raw_data/december_data_w", encoding = "UTF-8"))
-# janCsv <- as.data.frame(read.csv(file = "raw_data/january_data_w", encoding = "UTF-8"))
-# 
-# decCsv <- as.data.frame(read.csv(file = "raw_data/december_data_t", encoding = "UTF-8"))
-# janCsv <- as.data.frame(read.csv(file = "raw_data/january_data_t", encoding = "UTF-8"))
+decCsv <- as.data.frame(read.csv(file = "raw_data/december_data_w", encoding = "UTF-8"))
+janCsv <- as.data.frame(read.csv(file = "raw_data/january_data_w", encoding = "UTF-8"))
+
+decCsv <- as.data.frame(read.csv(file = "raw_data/december_data_t", encoding = "UTF-8"))
+janCsv <- as.data.frame(read.csv(file = "raw_data/january_data_t", encoding = "UTF-8"))
 # 
 decCsv <- as.data.frame(read.csv(file = "raw_data/december_data_c", encoding = "UTF-8"))
 janCsv <- as.data.frame(read.csv(file = "raw_data/january_data_c", encoding = "UTF-8"))
@@ -68,9 +68,9 @@ filterData <- filterData %>%
 
 
 #stringi Wojtek
-# home <- c("mikrus", "cieplewo", "łęgowo")
-# uni <- c("university", "akademik", "lincoln", "politechnika", "faculty", "central")
-# fun <- c("unii", "fryzjer", "rostock", "museum", "suntago", "royal", "church", "polny", "game", "frankfurt", "hamburg")
+home <- c("mikrus", "cieplewo", "łęgowo")
+uni <- c("university", "akademik", "lincoln", "politechnika", "faculty", "central")
+fun <- c("unii", "fryzjer", "rostock", "museum", "suntago", "royal", "church", "polny", "game", "frankfurt", "hamburg")
 
 #stringi Tymek
 home <- c("konstancin", "home")
@@ -115,9 +115,10 @@ filterData <- filterData %>%
 View(filterData)
 
 #dir.create("ramkiW")
-# saveRDS(filterData, file = "ramkiW/dataW.rds")
-# saveRDS(filterData, file = "ramkiW/dataT.rds")
+saveRDS(filterData, file = "ramkiW/dataW.rds")
+saveRDS(filterData, file = "ramkiW/dataT.rds")
 saveRDS(filterData, file = "ramkiW/dataC.rds")
+
 
 filterDataW <- readRDS(file = "ramkiW/dataW.rds")
 filterDataT <- readRDS(file = "ramkiW/dataT.rds")
@@ -164,4 +165,5 @@ plot <- ggplot(data = graphData, aes(x=weekday, y=hours, group = person, colour 
 plot
 
 View(graphData)
+#dobre ramki
 
