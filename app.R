@@ -13,6 +13,7 @@ map_df <- read.csv("map_data/map_df.csv", encoding = 'UTF-8')
 filterData <- readRDS(file = "ramkiW/data.rds")
 baseFrame <- readRDS(file = "ramkiW/baseFrame.rds")
 trans_df <- read.csv("trans_data/dataC", encoding = 'UTF-8')
+View(filterData)
 
 info_ui <- fluidPage(
   
