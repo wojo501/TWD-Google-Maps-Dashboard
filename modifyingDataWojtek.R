@@ -129,7 +129,9 @@ filterDataT <- filterDataT %>%
   mutate(person = "T")
 filterDataC <- filterDataC %>% 
   mutate(person = "C")
-filterData <- rbind(filterDataW, filterDataT, filterDataC)
+filterData <- rbind(filterDataW, filterDataT, filterDataC) %>% 
+  select(-time_diff)
+
 saveRDS(filterData, file = "ramkiW/data.rds")
 
 View(filterData)
