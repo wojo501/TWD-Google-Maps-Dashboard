@@ -59,10 +59,13 @@ while (filterData %>%  filter(time_diff != 0) %>% summarise(n()) %>% first() > 0
   print(1)
 }
 
+filterData$timeStart <- strptime(filterData$timeStart, '%Y-%m-%d %H:%M')
+filterData$timeEnd <- strptime(filterData$timeEnd, '%Y-%m-%d %H:%M')
+
 View(filterData)
 
 filterData <- filterData %>%
-  mutate(minutes = as.numeric(difftime(timeEnd, timeStart))) %>% 
+  mutate(minutes = as.numeric(difftime(timeEnd, timeStart, units="mins"))) %>% 
   mutate(week = format(filterData$timeStart, format="%Y-%U")) %>% 
   mutate(weekday = wday(timeStart))
 
@@ -143,7 +146,8 @@ baseFrame <- data.frame(weekday = c(1:7), hours = integer(7)) %>%
 saveRDS(baseFrame, file = "ramkiW/baseFrame.rds")
 
 View(baseFrame)
-                        
+filterDataW <- filterDataW %>% mutate(hours = sum(minutes)/60)
+View(filterDataW)                        
 graphData <- filterData %>% 
   filter(week == "2023-01" & type == "fun" & person %in% c("W", "T")) %>% 
   select(week, weekday, minutes, person) %>% 
@@ -167,5 +171,4 @@ plot <- ggplot(data = graphData, aes(x=weekday, y=hours, group = person, colour 
 plot
 
 View(graphData)
-#dobre ramki
 

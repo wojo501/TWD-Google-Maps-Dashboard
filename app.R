@@ -13,7 +13,7 @@ map_df <- read.csv("map_data/map_df.csv", encoding = 'UTF-8')
 filterData <- readRDS(file = "ramkiW/data.rds")
 baseFrame <- readRDS(file = "ramkiW/baseFrame.rds")
 trans_df <- read.csv("trans_data/dataC", encoding = 'UTF-8')
-View(filterData)
+
 
 info_ui <- fluidPage(
   
@@ -153,8 +153,22 @@ time_ui <- fluidPage(
       shinycssloaders::withSpinner(
         plotOutput("linePlot"),
         color = "#2fa4e7")
-    )
-  )
+    ),
+  ),
+  fluidRow(
+    br(),
+    column(width = 3),
+    column(width = 12, 
+           "The presented graph shows the duration of activities at home, university, and entertainment.
+           Thanks to the colorful lines viewer can match each line to a particular person.
+           After choosing a date from the calendar, the graph always presents the week with the chosen day.
+           Each week presented by the graph starts on Monday.
+           
+           While checking the data it turned out that Wojtek and Tymek spend more time at university than Czarek.
+           It turned out that Czarek and Tymek spend New Year’s Eve in their home cities.
+           However one can compete with Wojtek in terms of entertainment time.",
+           style = "text-align: center;"),
+    column(width = 3))
 )
 
 trans_ui <- fluidPage(
