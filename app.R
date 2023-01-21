@@ -267,13 +267,11 @@ server <- function(input, output) {
       mutate(hours = coalesce(hours.x, hours.y)) %>% 
       select(-c(hours.x, hours.y)) %>% 
       filter(person %in% osoby)
-  
-    graphData
     
     plot <- ggplot(data = graphData, aes(x=weekday, y=hours, group = person, color = person)) +
       geom_line() + 
       scale_color_manual(
-        values = c(C = "#4285F4", W = "#0F9D58", T = "#F4B400")
+        values = c("C" = "#4285F4", "W" = "#0F9D58", "T" = "#F4B400")
       ) +
       geom_point() +
       theme_minimal()+
