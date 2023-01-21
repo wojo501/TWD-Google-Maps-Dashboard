@@ -275,7 +275,7 @@ server <- function(input, output) {
       select(week, weekday, minutes, person) %>% 
       group_by(weekday, person) %>% 
       summarise(hours = sum(minutes)/60) %>% 
-      filter(hours<24)%>% 
+      mutate(hours = if_else(hours>24, 24, hours)) %>% 
       data.frame()
     
     graphData <- graphData %>% 
