@@ -25,7 +25,7 @@ View(janCsv)
 ###
 #To dodał Czarek
 #jak to zaaplikujesz na moich ramkach danych to powinno działać wyszukiwanie mojego domu :)
-janCsv <- janCsv %>% 
+decCsv <- decCsv %>% 
   mutate(placeVisit_location_name = case_when(
     (placeVisit_location_name == "" & placeVisit_location_address != "") ~ placeVisit_location_address,
     TRUE ~ placeVisit_location_name
@@ -51,24 +51,26 @@ filterData$timeEnd <- paste(substring(filterData$timeEnd, 1, 10), substring(filt
 filterData$timeStart <- strptime(filterData$timeStart, '%Y-%m-%d %H:%M')
 filterData$timeEnd <- strptime(filterData$timeEnd, '%Y-%m-%d %H:%M')
 filterData <- filterData %>% 
-  mutate(time_diff = as.integer(difftime(timeEnd, timeStart, units = "days")))
+  mutate(time_diff = as.integer(difftime(timeEnd, timeStart, units = "days"))) %>% 
+  filter(time_diff==0)
 #View(diffDay)
 #View(filterData)
-while (filterData %>%  filter(time_diff != 0) %>% summarise(n()) %>% first() > 0){
-  diffDay <- filterData %>%  
-    filter(time_diff != 0) %>% 
-    bind_rows(as.data.frame(.) %>% select(name, timeStart, timeEnd, time_diff) %>% 
-                mutate(timeStart = timeStart, timeEnd = as.Date(timeStart) + days(1), time_diff = as.integer(difftime(timeEnd, timeStart, units = "days")), part = "new"), as.data.frame(.) %>% 
-                select(name, timeStart, timeEnd, time_diff) %>% 
-                mutate(timeStart = as.Date(timeEnd), timeEnd = timeEnd, time_diff = as.integer(difftime(timeEnd, timeStart, units = "days")), part = "new")) %>% 
-    filter(part == "new") %>% 
-    select(-part)
-  
-  filterData <- filterData %>% 
-    filter(time_diff == 0) %>% 
-    bind_rows(diffDay)
-  print(1)
-}
+#cos tu nie dziala w tym while
+# while (filterData %>%  filter(time_diff != 0) %>% summarise(n()) %>% first() > 0){
+#   diffDay <- filterData %>%  
+#     filter(time_diff != 0) %>% 
+#     bind_rows(as.data.frame(.) %>% select(name, timeStart, timeEnd, time_diff) %>% 
+#                 mutate(timeStart = timeStart, timeEnd = as.Date(timeStart) + days(1), time_diff = as.integer(difftime(timeEnd, timeStart, units = "days")), part = "new"), as.data.frame(.) %>% 
+#                 select(name, timeStart, timeEnd, time_diff) %>% 
+#                 mutate(timeStart = as.Date(timeEnd), timeEnd = timeEnd, time_diff = as.integer(difftime(timeEnd, timeStart, units = "days")), part = "new")) %>% 
+#     filter(part == "new") %>% 
+#     select(-part)
+#   
+#   filterData <- filterData %>% 
+#     filter(time_diff == 0) %>% 
+#     bind_rows(diffDay)
+#   print(1)
+# }
 
 filterData$timeStart <- strptime(filterData$timeStart, '%Y-%m-%d %H:%M')
 filterData$timeEnd <- strptime(filterData$timeEnd, '%Y-%m-%d %H:%M')
@@ -150,6 +152,8 @@ filterData <- rbind(filterDataW, filterDataT, filterDataC) %>%
   select(-time_diff)
 
 saveRDS(filterData, file = "ramkiW/data.rds")
+filterData <- readRDS(file = "ramkiW/data.rds")
+filterData %>% filter(minutes > 1440)
 
 View(filterData)
 View(df_merged)
@@ -163,12 +167,12 @@ saveRDS(baseFrame, file = "ramkiW/baseFrame.rds")
 #filterDataW <- filterDataW %>% mutate(hours = sum(minutes)/60)
 #View(filterDataW)                        
 graphData <- filterData %>% 
-  filter(week == "2023-01" & type == "fun" & person %in% c("W", "T")) %>% 
+  filter(week == "2022-50" & type == "home" & person %in% c("W", "T", "C")) %>% 
   select(week, weekday, minutes, person) %>% 
   group_by(weekday, person) %>% 
   summarise(hours = sum(minutes)/60) %>% 
   data.frame()
-#View(graphData)
+View(graphData)
 #View(graphDataW)
 
 graphData <- graphData %>% 
