@@ -86,9 +86,9 @@ other <- c("biedronka", "stara", "lidl")
 
 View(filterData)
 #stringi Czarek
-home <- c("kazimierów", "willa", "repkowska", "sokołowska", "halinów")
+home <- c("kazimierów", "repkowska", "sokołowska", "halinów")
 uni <- c("gmach", "university")
-fun <- c("cybermachina", "gato", "kredens", "kuchnia", "manekin", "muzeum", "cafe", "restauracja")
+fun <- c("cybermachina", "gato", "kredens", "kuchnia", "manekin", "muzeum", "cafe", "restauracja", "willa")
 
 
 homes <- filterData[sapply(strsplit(filterData$name, split=" "), function(str) any(home %in% str)), ] %>% 

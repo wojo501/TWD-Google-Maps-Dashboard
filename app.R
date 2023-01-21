@@ -197,7 +197,22 @@ trans_ui <- fluidPage(
         color = "#2fa4e7")
       
     )
-  )
+  ), 
+  fluidRow(
+    br(),
+    column(width = 3),
+    column(width = 12, 
+           "At this interactive plot we can easily compare how do we move around on a daily basis or during x-mas holidays.
+           There are some obvious category, related to public transport, walking and driving a car, but as well thanks to Wojtek we have
+           plane and bicycle which might not be the most popular during winter.
+           Analising time before break we can see that Wojtek and Tymek usually travel via public transport like tram, bus or subway, while
+           in contrast to them, Czarek travels mostly by car and train. Everybody takes a walk sometimes, especially Wojtek, but these aren't
+           long distances anyway.
+           During our holidays Wojtek made more than 2000 kilometers in total, mostly by train and plane. No one was even close to him, as
+           Czarek made no more than 700km, and significantly less. It might be noted that nobody was travelling by subway at that time.
+           For more details try to play it yourself!",
+           style = "text-align: center;"),
+    column(width = 3))
 )
 
 
