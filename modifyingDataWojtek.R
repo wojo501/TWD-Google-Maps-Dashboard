@@ -22,6 +22,16 @@ janCsv <- as.data.frame(read.csv(file = "raw_data/january_data_c", encoding = "U
 View(decCsv)
 View(janCsv)
 
+###
+#To dodał Czarek
+#jak to zaaplikujesz na moich ramkach danych to powinno działać wyszukiwanie mojego domu :)
+decCsv <- decCsv %>% 
+  mutate(placeVisit_location_name = case_when(
+    (placeVisit_location_name == "" & placeVisit_location_address != "") ~ placeVisit_location_address,
+    TRUE ~ placeVisit_location_name
+  ))
+###
+
 filterDecCsv <- decCsv %>% 
   filter(placeVisit_location_name != "")
 
