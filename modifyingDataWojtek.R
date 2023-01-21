@@ -22,6 +22,16 @@ janCsv <- as.data.frame(read.csv(file = "raw_data/january_data_c", encoding = "U
 View(decCsv)
 View(janCsv)
 
+###
+#To dodał Czarek
+#jak to zaaplikujesz na moich ramkach danych to powinno działać wyszukiwanie mojego domu :)
+decCsv <- decCsv %>% 
+  mutate(placeVisit_location_name = case_when(
+    (placeVisit_location_name == "" & placeVisit_location_address != "") ~ placeVisit_location_address,
+    TRUE ~ placeVisit_location_name
+  ))
+###
+
 filterDecCsv <- decCsv %>% 
   filter(placeVisit_location_name != "")
 
@@ -41,28 +51,31 @@ filterData$timeEnd <- paste(substring(filterData$timeEnd, 1, 10), substring(filt
 filterData$timeStart <- strptime(filterData$timeStart, '%Y-%m-%d %H:%M')
 filterData$timeEnd <- strptime(filterData$timeEnd, '%Y-%m-%d %H:%M')
 filterData <- filterData %>% 
-  mutate(time_diff = as.integer(difftime(timeEnd, timeStart, units = "days")))
-
-while (filterData %>%  filter(time_diff != 0) %>% summarise(n()) %>% first() > 0){
-  diffDay <- filterData %>%  
-    filter(time_diff != 0) %>% 
-    bind_rows(as.data.frame(.) %>% select(name, timeStart, timeEnd, time_diff) %>% 
-                mutate(timeStart = timeStart, timeEnd = as.Date(timeStart) + days(1), time_diff = as.integer(difftime(timeEnd, timeStart, units = "days")), part = "new"), as.data.frame(.) %>% 
-                select(name, timeStart, timeEnd, time_diff) %>% 
-                mutate(timeStart = as.Date(timeEnd), timeEnd = timeEnd, time_diff = as.integer(difftime(timeEnd, timeStart, units = "days")), part = "new")) %>% 
-    filter(part == "new") %>% 
-    select(-part)
-  
-  filterData <- testData %>% 
-    filter(time_diff == 0) %>% 
-    bind_rows(diffDay)
-  print(1)
-}
+  mutate(time_diff = as.integer(difftime(timeEnd, timeStart, units = "days"))) %>% 
+  filter(time_diff==0)
+#View(diffDay)
+#View(filterData)
+#cos tu nie dziala w tym while
+# while (filterData %>%  filter(time_diff != 0) %>% summarise(n()) %>% first() > 0){
+#   diffDay <- filterData %>%  
+#     filter(time_diff != 0) %>% 
+#     bind_rows(as.data.frame(.) %>% select(name, timeStart, timeEnd, time_diff) %>% 
+#                 mutate(timeStart = timeStart, timeEnd = as.Date(timeStart) + days(1), time_diff = as.integer(difftime(timeEnd, timeStart, units = "days")), part = "new"), as.data.frame(.) %>% 
+#                 select(name, timeStart, timeEnd, time_diff) %>% 
+#                 mutate(timeStart = as.Date(timeEnd), timeEnd = timeEnd, time_diff = as.integer(difftime(timeEnd, timeStart, units = "days")), part = "new")) %>% 
+#     filter(part == "new") %>% 
+#     select(-part)
+#   
+#   filterData <- filterData %>% 
+#     filter(time_diff == 0) %>% 
+#     bind_rows(diffDay)
+#   print(1)
+# }
 
 filterData$timeStart <- strptime(filterData$timeStart, '%Y-%m-%d %H:%M')
 filterData$timeEnd <- strptime(filterData$timeEnd, '%Y-%m-%d %H:%M')
 
-View(filterData)
+#View(filterData)
 
 filterData <- filterData %>%
   mutate(minutes = as.numeric(difftime(timeEnd, timeStart, units="mins"))) %>% 
@@ -84,11 +97,11 @@ fun <- c("ramen", "asia", "boisko", "green", "garden", "mcdonald's", "momencik",
 work <- c("arkadia", "magazyn")
 other <- c("biedronka", "stara", "lidl")
 
-View(filterData)
+#View(filterData)
 #stringi Czarek
-home <- c("kazimierów", "willa", "repkowska", "sokołowska", "halinów")
+home <- c("kazimierów", "repkowska", "sokołowska", "halinów")
 uni <- c("gmach", "university")
-fun <- c("cybermachina", "gato", "kredens", "kuchnia", "manekin", "muzeum", "cafe", "restauracja")
+fun <- c("cybermachina", "gato", "kredens", "kuchnia", "manekin", "muzeum", "cafe", "restauracja", "willa")
 
 
 homes <- filterData[sapply(strsplit(filterData$name, split=" "), function(str) any(home %in% str)), ] %>% 
@@ -115,7 +128,7 @@ filterData <- filterData %>%
     TRUE~"other"
   )) %>% select(-type.x, -type.y)
 
-View(filterData)
+#View(filterData)
 
 #dir.create("ramkiW")
 saveRDS(filterData, file = "ramkiW/dataW.rds")
@@ -126,6 +139,9 @@ View(filterDataC)
 filterDataW <- readRDS(file = "ramkiW/dataW.rds")
 filterDataT <- readRDS(file = "ramkiW/dataT.rds")
 filterDataC <- readRDS(file = "ramkiW/dataC.rds")
+#View(filterDataC)
+#filterDataC %>% filter(time_diff != 0)
+
 filterDataW <- filterDataW %>% 
   mutate(person = "W")
 filterDataT <- filterDataT %>% 
@@ -136,6 +152,8 @@ filterData <- rbind(filterDataW, filterDataT, filterDataC) %>%
   select(-time_diff)
 
 saveRDS(filterData, file = "ramkiW/data.rds")
+filterData <- readRDS(file = "ramkiW/data.rds")
+filterData %>% filter(minutes > 1440)
 
 View(filterData)
 View(df_merged)
@@ -145,17 +163,17 @@ baseFrame <- data.frame(weekday = c(1:7), hours = integer(7)) %>%
   expand(weekday, hours, person)
 saveRDS(baseFrame, file = "ramkiW/baseFrame.rds")
 
-View(baseFrame)
-filterDataW <- filterDataW %>% mutate(hours = sum(minutes)/60)
-View(filterDataW)                        
+#View(baseFrame)
+#filterDataW <- filterDataW %>% mutate(hours = sum(minutes)/60)
+#View(filterDataW)                        
 graphData <- filterData %>% 
-  filter(week == "2023-01" & type == "fun" & person %in% c("W", "T")) %>% 
+  filter(week == "2022-50" & type == "home" & person %in% c("W", "T", "C")) %>% 
   select(week, weekday, minutes, person) %>% 
   group_by(weekday, person) %>% 
   summarise(hours = sum(minutes)/60) %>% 
   data.frame()
 View(graphData)
-View(graphDataW)
+#View(graphDataW)
 
 graphData <- graphData %>% 
   full_join(baseFrame, by = c("weekday", "person")) %>% 
