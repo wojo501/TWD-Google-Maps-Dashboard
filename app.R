@@ -227,7 +227,7 @@ trans_ui <- fluidPage(
            Everybody takes a walk sometimes, especially Wojtek, but those aren't
            long distances anyway. During holidays Wojtek made more than 2000 
            kilometers in total, mostly by train and plane. No one was even close to him, as
-           Czarek made no more than 700km, and Tymek significantly less. 
+           Czarek made no more than 700km and Tymek significantly less. 
            It might be noted that nobody was travelling by subway at that time.
            For more details try to play with it yourself!",
            style = "text-align: center;"),
