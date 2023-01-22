@@ -173,13 +173,14 @@ time_ui <- fluidPage(
     br(),
     column(width = 2),
     column(width = 8, 
-           "The presented graph shows the duration of activities at home, university, and entertainment.
-           Thanks to the colorful lines viewer can match each line to a particular person.
+           "The presented graph shows the duration of activities at home, university and entertainment.
+           Thanks to the colored lines user can match each line to a particular person.
            After choosing a date from the calendar, the graph always presents the week with the chosen day.
            Each week presented by the graph starts on Monday.
-           While checking the data it turned out that Wojtek and Tymek spend more time at university than Czarek.
-           It turned out that Czarek and Tymek spend New Year’s Eve in their home cities.
-           However one can compete with Wojtek in terms of entertainment time.",
+           While checking the data it turned out that Wojtek and Tymek usually 
+           spend more time at university than Czarek. 
+           It turned out that only Czarek and Wojtek have spent New Year’s Eve partying.
+           However, on a daily basis no one can compete with Tymek when it comes to entertainment time.",
            style = "text-align: center;"),
     column(width = 2))
 )
@@ -215,14 +216,19 @@ trans_ui <- fluidPage(
     br(),
     column(width = 2),
     column(width = 8, 
-           "At this interactive plot we can easily compare how do we move around on a daily basis or during x-mas holidays.
-           There are some obvious category, related to public transport, walking and driving a car, but as well thanks to Wojtek we have
-           plane and bicycle which might not be the most popular during winter.
-           Analising time before break we can see that Wojtek and Tymek usually travel via public transport like tram, bus or subway, while
-           in contrast to them, Czarek travels mostly by car and train. Everybody takes a walk sometimes, especially Wojtek, but these aren't
-           long distances anyway.
-           During our holidays Wojtek made more than 2000 kilometers in total, mostly by train and plane. No one was even close to him, as
-           Czarek made no more than 700km, and significantly less. It might be noted that nobody was travelling by subway at that time.
+           "In this interactive plot we can easily compare how do we move around
+           on a daily basis or during x-mas holidays.
+           There are some obvious categories related to public transport,
+           walking and driving a car, but thanks to Wojtek we have also
+           plane and bicycle which might not be the most popular modes of transport during winter.
+           Analising time before christmas break we can see that Wojtek and Tymek
+           usually travel using public transport like trams, buses or subway, while
+           Czarek, in contrast to them, travels mostly by car and train.
+           Everybody takes a walk sometimes, especially Wojtek, but those aren't
+           long distances anyway. During holidays Wojtek made more than 2000 
+           kilometers in total, mostly by train and plane. No one was even close to him, as
+           Czarek made no more than 700km, and Tymek significantly less. 
+           It might be noted that nobody was travelling by subway at that time.
            For more details try to play with it yourself!",
            style = "text-align: center;"),
     column(width = 2))
