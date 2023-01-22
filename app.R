@@ -7,7 +7,9 @@ library(Cairo)
 library(shinyWidgets)
 library(htmltools)
 library(shinyBS)
+library(shinyjs)
 options(shiny.usecairo=T)
+useShinyjs()
 
 map_df <- read.csv("map_data/map_df.csv", encoding = 'UTF-8')
 filterData <- readRDS(file = "ramkiW/data.rds")
@@ -36,27 +38,39 @@ info_ui <- fluidPage(
            style = "text-align: center;"),
     column(width = 3)),
   br(),
-  
   fluidRow(
+    column(width = 1),
     column(width = 4,
-           img(src = 'czarek.png', height = '200px', style = "display: block; margin: 0 auto;"),
+           img(src = 'czarek.png', height = '200px',
+               style = "display: block; margin: 0 auto; cursor: pointer;",
+               onclick ="window.open('https://github.com/CCzarek', '_blank')"),
            br(),
            tags$figcaption("Czarek", align = 'center', style = "font-size: 30px;")
 
     ),
-    column(width = 4,
-           img(src = 'tymek.png', height = '200px', style = "display: block; margin: 0 auto;"),
+    column(width = 2,
+           img(src = 'tymek.png', height = '200px', style = "display: block; margin: 0 auto; cursor: pointer;",
+               onclick ="window.open('https://github.com/tymsoncyferki', '_blank')"),
            br(),
            tags$figcaption("Tymek", align = 'center', style = "font-size: 30px;")
            
     ),
     column(width = 4,
-           img(src = 'wojtek.png', height = '200px', style = "display: block; margin: 0 auto;"),
+           img(src = 'wojtek.png', height = '200px', style = "display: block; margin: 0 auto; cursor: pointer;",
+               onclick ="window.open('https://github.com/wojo501', '_blank')"),
            br(),
            tags$figcaption("Wojtek", align = 'center', style = "font-size: 30px;")
-           
-    )
+    ),
+    column(width = 1),
   ),
+  br(),
+  fluidRow(
+    column(width = 3),
+    column(width = 6, 
+           "You can check out our github profiles simply by clicking on colored icons. 
+           ",
+           style = "text-align: center;"),
+    column(width = 3)),
   
 )
 
@@ -157,18 +171,17 @@ time_ui <- fluidPage(
   ),
   fluidRow(
     br(),
-    column(width = 3),
-    column(width = 12, 
+    column(width = 2),
+    column(width = 8, 
            "The presented graph shows the duration of activities at home, university, and entertainment.
            Thanks to the colorful lines viewer can match each line to a particular person.
            After choosing a date from the calendar, the graph always presents the week with the chosen day.
            Each week presented by the graph starts on Monday.
-           
            While checking the data it turned out that Wojtek and Tymek spend more time at university than Czarek.
            It turned out that Czarek and Tymek spend New Year’s Eve in their home cities.
            However one can compete with Wojtek in terms of entertainment time.",
            style = "text-align: center;"),
-    column(width = 3))
+    column(width = 2))
 )
 
 trans_ui <- fluidPage(
@@ -200,8 +213,8 @@ trans_ui <- fluidPage(
   ), 
   fluidRow(
     br(),
-    column(width = 3),
-    column(width = 12, 
+    column(width = 2),
+    column(width = 8, 
            "At this interactive plot we can easily compare how do we move around on a daily basis or during x-mas holidays.
            There are some obvious category, related to public transport, walking and driving a car, but as well thanks to Wojtek we have
            plane and bicycle which might not be the most popular during winter.
@@ -210,13 +223,18 @@ trans_ui <- fluidPage(
            long distances anyway.
            During our holidays Wojtek made more than 2000 kilometers in total, mostly by train and plane. No one was even close to him, as
            Czarek made no more than 700km, and significantly less. It might be noted that nobody was travelling by subway at that time.
-           For more details try to play it yourself!",
+           For more details try to play with it yourself!",
            style = "text-align: center;"),
-    column(width = 3))
+    column(width = 2))
 )
 
 
 server <- function(input, output) {
+  
+  #Strona główna
+  shinyjs::onclick("image_tymek", function(){
+    window.open("https://google.com", "_blank")
+  })
   
   #Czesc Czarek
   output$barPlot <- renderPlot({
@@ -257,6 +275,7 @@ server <- function(input, output) {
                        fillOpacity = 0.3
                        )
   })
+  
   #Część Wojtek z
   output$linePlot <- renderPlot({
     filtr <- case_when(
