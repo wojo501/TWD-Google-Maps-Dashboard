@@ -12,8 +12,8 @@ options(shiny.usecairo=T)
 useShinyjs()
 
 map_df <- read.csv("map_data/map_df.csv", encoding = 'UTF-8')
-filterData <- readRDS(file = "ramkiW/data.rds")
-baseFrame <- readRDS(file = "ramkiW/baseFrame.rds")
+filterData <- readRDS(file = "time_data/data.rds")
+baseFrame <- readRDS(file = "time_data/baseFrame.rds")
 trans_df <- read.csv("trans_data/dataC", encoding = 'UTF-8')
 
 
@@ -29,7 +29,7 @@ info_ui <- fluidPage(
     column(width = 3),
     column(width = 6, 
            "Welcome to our webpage. This shiny app was created for Data 
-           Visualisation Techniques by 3 WUT students. For over a month we have
+           Visualisation Techniques course by 3 WUT students. For almost two months we have
            been collecting data using Google Maps, which had access to our
            location 24 hours a day. Thanks to this, we could acquire information
            such as time spent in a certain place or mean of transport used.
@@ -41,7 +41,7 @@ info_ui <- fluidPage(
   fluidRow(
     column(width = 1),
     column(width = 4,
-           img(src = 'czarek.png', height = '200px',
+           img(src = 'czarek.png', height = '250px',
                style = "display: block; margin: 0 auto; cursor: pointer;",
                onclick ="window.open('https://github.com/CCzarek', '_blank')"),
            br(),
@@ -49,14 +49,14 @@ info_ui <- fluidPage(
 
     ),
     column(width = 2,
-           img(src = 'tymek.png', height = '200px', style = "display: block; margin: 0 auto; cursor: pointer;",
+           img(src = 'tymek.png', height = '250px', style = "display: block; margin: 0 auto; cursor: pointer;",
                onclick ="window.open('https://github.com/tymsoncyferki', '_blank')"),
            br(),
            tags$figcaption("Tymek", align = 'center', style = "font-size: 30px;")
            
     ),
     column(width = 4,
-           img(src = 'wojtek.png', height = '200px', style = "display: block; margin: 0 auto; cursor: pointer;",
+           img(src = 'wojtek.png', height = '250px', style = "display: block; margin: 0 auto; cursor: pointer;",
                onclick ="window.open('https://github.com/wojo501', '_blank')"),
            br(),
            tags$figcaption("Wojtek", align = 'center', style = "font-size: 30px;")
@@ -71,22 +71,51 @@ info_ui <- fluidPage(
            ",
            style = "text-align: center;"),
     column(width = 3)),
+  br(),
+  br(),
+  fluidRow(
+    column(width = 2),
+    column(width = 4,
+           img(src = 'maps_logo.png', height = '200px',
+               style = "display: block; margin: 0 auto; cursor: pointer;",
+               onclick ="window.open('https://takeout.google.com/takeout/custom/local_actions,location_history,maps,mymaps?dnm=false&continue=https://myaccount.google.com/yourdata/maps&hl=en&utm_source=privacy-advisor-maps',
+               '_blank')"),
+           br(),
+           tags$figcaption("Download your Google Maps data", align = 'center', style = "font-size: 25px;")
+    ),
+    column(width = 4,
+           img(src = 'github_logo.png', height = '200px',
+               style = "display: block; margin: 0 auto; cursor: pointer;",
+               onclick ="window.open('https://github.com/tymsoncyferki/TWD_Projekt2',
+               '_blank')"),
+           br(),
+           tags$figcaption("View our Github repository", align = 'center', style = "font-size: 25px;")
+    ),
+  ),
   
+    
 )
+
 
 map_ui <- fluidPage(
   
-  titlePanel("Map of visited places"),
+  fluidRow(
+    column(width = 1),
+    column(width = 11, 
+           titlePanel("Map of visited places"))),
+  
   
   fluidRow(
-    column(width = 12, 
-    "Map of places we visited in a given date range. The bigger the circle, 
+    column(width = 1),
+    column(width = 11, 
+           "Map of places we visited in a given date range. The bigger the circle, 
     the more visited.")),
   
   br(),
   
   fluidRow(
-    column(width = 4,
+    column(width = 1),
+    column(width = 3,
            wellPanel(checkboxGroupButtons(
              inputId = "persons",
              label = "Select persons:",
@@ -98,8 +127,8 @@ map_ui <- fluidPage(
            ),
            
            dateRangeInput("date_range", "Select date range:",
-                          start = "2022-12-07", end = "2023-01-05",
-                          min = "2022-12-07", max = "2023-01-05",
+                          start = "2022-12-07", end = "2023-01-24",
+                          min = "2022-12-07", max = "2023-01-24",
                           format = "yyyy-mm-dd", startview = "month",
                           autoclose = TRUE)),
            br(),
@@ -117,9 +146,9 @@ map_ui <- fluidPage(
            style = "text-align: justify;"
            
     ),
-    column(width = 8,
+    column(width = 7,
            shinycssloaders::withSpinner(
-             leafletOutput("placeMap", height = "500px"),
+             leafletOutput("placeMap", height = "550px"),
              color = "#2fa4e7"))
     
   ),
@@ -128,51 +157,58 @@ map_ui <- fluidPage(
 
 time_ui <- fluidPage(
   
-  titlePanel("Time spent"),
   fluidRow(
-    column(width = 12, 
+    column(width = 1),
+    column(width = 11, 
+           titlePanel("Time spent"))),
+  fluidRow(
+    column(width = 1),
+    column(width = 11, 
            "Hours spent in places from certain category.")),
   br(),
-  sidebarLayout(
-    sidebarPanel(
-      checkboxGroupButtons(
-        inputId = "osoby",
-        label = "Select persons:",
-        choices = c("Czarek", "Tymek", "Wojtek"),
-        selected = c("Czarek", "Tymek", "Wojtek"),
-        individual = TRUE,
-        status = c("primary", "secondary" , "success")
-        
-      ),
-      selectInput("typ", 
-                  "Select category:",
-                  choices = c("University",
-                              "Home",
-                              "Entertainment",
-                              "Other"
-                  )),
-      dateInput(
-        "tydzien",
-        "Choose week:",
-        min = "2022-12-12",
-        max = "2023-01-03",
-        value = "2022-12-13",
-        format = "yyyy-mm-dd",
-        startview = "month",
-        weekstart = 1,
-        language = "en"
-      )),
-    
-    mainPanel(
-      shinycssloaders::withSpinner(
-        plotOutput("linePlot"),
-        color = "#2fa4e7")
-    ),
-  ),
+  
   fluidRow(
-    br(),
-    column(width = 2),
-    column(width = 8, 
+    column(width = 1),
+    column(width = 3,
+           wellPanel(
+             fluidRow(
+               checkboxGroupButtons(
+                 inputId = "osoby",
+                 label = "Select persons:",
+                 choices = c("Czarek", "Tymek", "Wojtek"),
+                 selected = c("Czarek", "Tymek", "Wojtek"),
+                 individual = TRUE,
+                 status = c("primary", "secondary" , "success")
+               )
+             ),
+             fluidRow(
+               column(width = 6,
+                      selectInput(
+                        "typ", 
+                        "Select category:",
+                        choices = c("University",
+                                    "Home",
+                                    "Entertainment",
+                                    "Other")
+                      )
+               ),
+               column(width = 6,
+                      dateInput(
+                        "tydzien",
+                        "Choose week:",
+                        min = "2022-12-12",
+                        max = "2023-01-24",
+                        value = "2022-12-13",
+                        format = "yyyy-mm-dd",
+                        startview = "month",
+                        weekstart = 1,
+                        language = "en"
+                      )
+               ),
+               
+             )
+           ),
+           br(),
            "The presented graph shows the duration of activities at home, university and entertainment.
            Thanks to the colored lines user can match each line to a particular person.
            After choosing a date from the calendar, the graph always presents the week with the chosen day.
@@ -181,41 +217,55 @@ time_ui <- fluidPage(
            spend more time at university than Czarek. 
            It turned out that only Czarek and Wojtek have spent New Year’s Eve partying.
            However, on a daily basis no one can compete with Tymek when it comes to entertainment time.",
-           style = "text-align: center;"),
-    column(width = 2))
+           style = "text-align: justify;"
+    ),
+    column(width = 7,
+           shinycssloaders::withSpinner(
+             plotOutput("linePlot", height = "500px"),
+             color = "#2fa4e7")),
+    column(width = 1)
+  )
 )
 
 trans_ui <- fluidPage(
   
-  titlePanel("Transport"),
+  
   fluidRow(
-    column(width = 12, 
+    column(width = 1),
+    column(width = 11, 
+           titlePanel("Transport"))),
+  fluidRow(
+    column(width = 1),
+    column(width = 11, 
            "Sum of kilometers we travelled during the weekday.")),
   br(),
   
-  sidebarLayout(
-    sidebarPanel(
-      checkboxGroupInput("transport",
-                         "Select modes of transport:",
-                         choices = c("walk", "bicycle", "car", "tram", "train", "bus", "subway", "plane"),
-                         selected = "walk"),
-      dateRangeInput("date_range_trans", "Select date range:",
-                     start = "2022-12-07", end = "2023-01-05",
-                     min = "2022-12-07", max = "2023-01-05",
-                     format = "yyyy-mm-dd", startview = "month",
-                     autoclose = TRUE)),
-    
-    mainPanel(
-      shinycssloaders::withSpinner(
-        plotOutput("barPlot"),
-        color = "#2fa4e7")
-      
-    )
-  ), 
   fluidRow(
-    br(),
-    column(width = 2),
-    column(width = 8, 
+    column(width = 1),
+    column(width = 5,
+           wellPanel(
+             fluidRow(
+               column(width = 12,
+                      "Select modes of transport:")),
+             fluidRow(
+               column(width = 3,
+                      checkboxGroupInput("transport1",
+                                         "",
+                                         choices = c("walk", "bicycle", "car", "tram"),
+                                         selected = "walk"),),
+               column(width = 3,
+                      checkboxGroupInput("transport2",
+                                         "",
+                                         choices = c("train", "bus", "subway", "plane"),
+                                         selected = ""),)
+             ),
+             dateRangeInput("date_range_trans", "Select date range:",
+                            start = "2022-12-07", end = "2023-01-05",
+                            min = "2022-12-07", max = "2023-01-05",
+                            format = "yyyy-mm-dd", startview = "month",
+                            autoclose = TRUE),
+           )),
+    column(width = 5,
            "In this interactive plot we can easily compare how do we move around
            on a daily basis or during x-mas holidays.
            There are some obvious categories related to public transport,
@@ -230,10 +280,18 @@ trans_ui <- fluidPage(
            Czarek made no more than 700km and Tymek significantly less. 
            It might be noted that nobody was travelling by subway at that time.
            For more details try to play with it yourself!",
-           style = "text-align: center;"),
-    column(width = 2))
+           style = "text-align: justify;"),
+    column(width = 1)
+  ),
+  fluidRow(
+    column(width = 1),
+    column(width = 10,
+           shinycssloaders::withSpinner(
+             plotOutput("barPlot"),
+             color = "#2fa4e7")),
+    column(width = 1)
+  ),
 )
-
 
 server <- function(input, output) {
   
@@ -247,7 +305,7 @@ server <- function(input, output) {
     trans_df$weekDay <- factor(trans_df$weekDay, levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
     trans_df %>% 
       filter(date >= input$date_range_trans[1] & date <= input$date_range_trans[2]) %>%
-      filter(type %in% input$transport) %>%
+      filter(type %in% cbind(input$transport1, input$transport2)) %>%
       mutate(distance = distance/1000) %>%
       group_by(weekDay, name) %>% 
       summarise(sumKilo = sum(distance)) %>% 
@@ -307,7 +365,19 @@ server <- function(input, output) {
       full_join(baseFrame, by = c("weekday", "person")) %>% 
       mutate(hours = coalesce(hours.x, hours.y)) %>% 
       select(-c(hours.x, hours.y)) %>% 
-      filter(person %in% osoby)
+      filter(person %in% osoby) %>% 
+      mutate(weekdayN=case_when(
+        weekday==1~"Mon",
+        weekday==2~"Tue",
+        weekday==3~"Wed",
+        weekday==4~"Thu",
+        weekday==5~"Fri",
+        weekday==6~"Sat",
+        weekday==7~"Sun"
+      ))
+    
+    
+    
     
     plot <- ggplot(data = graphData, aes(x=weekday, y=hours, group = person, color = person)) +
       geom_line() + 
@@ -316,7 +386,7 @@ server <- function(input, output) {
       ) +
       geom_point() +
       theme_minimal()+
-      scale_x_continuous("Weekday", labels = graphData$weekday, breaks = graphData$weekday) +
+      scale_x_continuous("Weekday", labels = graphData$weekdayN, breaks = graphData$weekday) +
       labs(y = "Hours") +
       theme(legend.title = element_blank(),
             legend.position = "none")
@@ -341,7 +411,7 @@ app_ui <- navbarPage(
                 <footer class='text-center text-sm-start' style='width:100%;'>
                 <hr>
                 <p class='text-center' style='font-size:12px;'>
-                  Data Visualization Techniques 2023 
+                  <a class='text-dark' href='https://github.com/MI2-Education/2023Z-DataVisualizationTechniques/tree/main/projects/project2'  style='text-decoration: none'>Data Visualization Techniques 2023</a> 
                 </p>
                 </footer>
                 "),
