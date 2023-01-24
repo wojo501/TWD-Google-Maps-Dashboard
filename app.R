@@ -342,7 +342,19 @@ server <- function(input, output) {
       full_join(baseFrame, by = c("weekday", "person")) %>% 
       mutate(hours = coalesce(hours.x, hours.y)) %>% 
       select(-c(hours.x, hours.y)) %>% 
-      filter(person %in% osoby)
+      filter(person %in% osoby) %>% 
+      mutate(weekdayN=case_when(
+        weekday==1~"Mon",
+        weekday==2~"Tue",
+        weekday==3~"Wed",
+        weekday==4~"Thu",
+        weekday==5~"Fri",
+        weekday==6~"Sat",
+        weekday==7~"Sun"
+      ))
+    
+    
+    
     
     plot <- ggplot(data = graphData, aes(x=weekday, y=hours, group = person, color = person)) +
       geom_line() + 
@@ -351,7 +363,7 @@ server <- function(input, output) {
       ) +
       geom_point() +
       theme_minimal()+
-      scale_x_continuous("Weekday", labels = graphData$weekday, breaks = graphData$weekday) +
+      scale_x_continuous("Weekday", labels = graphData$weekdayN, breaks = graphData$weekday) +
       labs(y = "Hours") +
       theme(legend.title = element_blank(),
             legend.position = "none")

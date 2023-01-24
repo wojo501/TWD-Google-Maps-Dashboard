@@ -175,6 +175,23 @@ graphData <- filterData %>%
 View(graphData)
 #View(graphDataW)
 
+days <- c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+graphData <- graphData %>% 
+  mutate(weekdayN=case_when(
+    weekday==1~"Mon",
+    weekday==2~"Tue",
+    weekday==3~"Wed",
+    weekday==4~"Thu",
+    weekday==5~"Fri",
+    weekday==6~"Sat",
+    weekday==7~"Sun"
+  ))
+
+graphData  %>% 
+  print(weekday)
+
+typeof(factor(graphData$weekday[1]))
+View(graphData)
 graphData <- graphData %>% 
   full_join(baseFrame, by = c("weekday", "person")) %>% 
   mutate(hours = coalesce(hours.x, hours.y)) %>% 
@@ -187,6 +204,19 @@ plot <- ggplot(data = graphData, aes(x=weekday, y=hours, group = person, colour 
   theme_bw()+
   scale_x_continuous("weekday", labels = graphData$weekday, breaks = graphData$weekday)
 plot
+
+plot1 <- ggplot(data = graphData, aes(x=weekday, y=hours, group = person, color = person)) +
+  geom_line() + 
+  scale_color_manual(
+    values = c("C" = "#4285F4", "W" = "#0F9D58", "T" = "#F4B400")
+  ) +
+  geom_point() +
+  theme_minimal()+
+  scale_x_continuous("Weekday", labels = graphData$weekdayN, breaks = graphData$weekday) +
+  labs(y = "Hours") +
+  theme(legend.title = element_blank(),
+        legend.position = "none")
+plot1
 
 View(graphData)
 
