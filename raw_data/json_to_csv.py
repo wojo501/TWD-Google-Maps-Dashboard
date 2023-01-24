@@ -23,7 +23,7 @@ with open("2023_JANUARY.json", encoding='utf8') as input_file:
     columns = [x for row in df_flat for x in row.keys()]
     columns = list(set(columns))
 
-with open("january_data_t", 'w', encoding='utf8') as out_file:
+with open("january_data_t_edit", 'w', encoding='utf8') as out_file:
     csv_w = csv.writer(out_file)
     csv_w.writerow(columns)
     for i_r in df_flat:
