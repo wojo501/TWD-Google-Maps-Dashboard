@@ -1,0 +1,14 @@
+name: project_maps
+title: project_maps
+username:
+account: tymsoncyferki
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 8094836
+bundleId: 6760775
+url: https://tymsoncyferki.shinyapps.io/project_maps/
+when: 1674396344.98081
+lastSyncTime: 1674396344.98083
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: json_to_csv.py|moje_dane.R|tests/places_chart.R|tests/places_map.R
