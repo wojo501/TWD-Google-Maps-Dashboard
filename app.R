@@ -141,8 +141,8 @@ map_ui <- fluidPage(
            county. Because of it, the center of Warsaw is mostly covered with yellow markers. 
            Coming to Czarek, it can be seen that he lives outside the city and he 
            uses Warsaw East Station a lot. On winter holidays he went to Sokołów and Toruń.
-           Why Czarek haven't travelled once in january during weekend? That's because he 
-           wasn't fully healthy. For more insides try it yourself!",
+           Are you interested which places we visit and how often? Use our map 
+           and try to find out yourself!",
            style = "text-align: justify;"
            
     ),
@@ -279,7 +279,8 @@ trans_ui <- fluidPage(
            kilometers in total, mostly by train and plane. No one was even close to him, as
            Czarek made no more than 700km and Tymek significantly less. 
            It might be noted that nobody was travelling by subway at that time.
-           For more details try to play with it yourself!",
+           Why Czarek haven't travelled once in january during weekend? That's because he 
+           wasn't fully healthy. For more insides try it yourself!",
            style = "text-align: justify;"),
     column(width = 1)
   ),
