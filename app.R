@@ -294,14 +294,6 @@ trans_ui <- fluidPage(
   ),
 )
 
-file_ui <- fluidPage(
-  "Now it is your turn!",
-  fluidRow(
-    fileInput("file", "Choose JSON file"),
-    downloadButton("download", "Download CSV")
-  )
-)
-
 server <- function(input, output) {
   
   #Strona główna
