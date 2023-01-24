@@ -318,7 +318,8 @@ server <- function(input, output) {
       ) +
       labs(title = "", y = "Kilometers", x = "", fill = "person", ) +
       theme_minimal() +
-      theme(axis.text=element_text(size=10.5), legend.title = element_blank())
+      theme(axis.text=element_text(size=13,face="bold"), legend.title = element_blank(), axis.title=element_text(size=13,face="bold"),
+            legend.text = element_text(size=11,face="bold"))
   })
   
   #Część Tymek
@@ -369,13 +370,13 @@ server <- function(input, output) {
       select(-c(hours.x, hours.y)) %>% 
       filter(person %in% osoby) %>% 
       mutate(weekdayN=case_when(
-        weekday==1~"Mon",
-        weekday==2~"Tue",
-        weekday==3~"Wed",
-        weekday==4~"Thu",
-        weekday==5~"Fri",
-        weekday==6~"Sat",
-        weekday==7~"Sun"
+        weekday==1~"Monday",
+        weekday==2~"Tuesday",
+        weekday==3~"Wednesday",
+        weekday==4~"Thursday",
+        weekday==5~"Friday",
+        weekday==6~"Saturday",
+        weekday==7~"Sunday"
       ))
     
     
@@ -388,10 +389,12 @@ server <- function(input, output) {
       ) +
       geom_point() +
       theme_minimal()+
-      scale_x_continuous("Weekday", labels = graphData$weekdayN, breaks = graphData$weekday) +
+      scale_x_continuous("", labels = graphData$weekdayN, breaks = graphData$weekday) +
       labs(y = "Hours") +
       theme(legend.title = element_blank(),
-            legend.position = "none")
+            legend.position = "none", 
+            axis.text=element_text(size=12,face="bold"), 
+            axis.title=element_text(size=13,face="bold"))
     plot
     
   })
