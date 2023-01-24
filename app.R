@@ -108,8 +108,8 @@ map_ui <- fluidPage(
   fluidRow(
     column(width = 1),
     column(width = 11, 
-           "Map of places we visited in a given date range. The bigger the circle, 
-    the more visited.")),
+           "Map of places we have visited in a given date range. The bigger the circle, 
+    the more visited the place is.")),
   
   br(),
   
@@ -134,15 +134,16 @@ map_ui <- fluidPage(
            br(),
            "Thanks to the interactivity of the map, you can easily check where
            each person spent new year's eve or which place has he visited most often.
-           Of course, everybodys most visited places are home (or a dorm) and the university.
+           Of course, everybody's most visited places are home (or a dorm) and the university.
            As you can see, the person who travelled the most is Wojtek. He has 
            visited such places as Berlin, Hamburg or Tri-City. Unlike him, Tymek
            has never left Masovia and the furthest place he has been to is Piaseczno
            county. Because of it, the center of Warsaw is mostly covered with yellow markers. 
            Coming to Czarek, it can be seen that he lives outside the city and he 
            uses Warsaw East Station a lot. On winter holidays he went to Sokołów and Toruń.
-           Are you interested which places we visit and how often? Use our map 
+           Are you interested in which places we visit and how often? Use our map 
            and try to find out yourself!",
+           
            style = "text-align: justify;"
            
     ),
@@ -266,18 +267,18 @@ trans_ui <- fluidPage(
                             autoclose = TRUE),
            )),
     column(width = 5,
-           "In this interactive plot we can easily compare how do we move around
-           on a daily basis or during x-mas holidays.
+           "In this interactive plot, we can easily compare how we move around
+           on a daily basis or during X-mas holidays.
            There are some obvious categories related to public transport,
            walking and driving a car, but thanks to Wojtek we have also
            plane and bicycle which might not be the most popular modes of transport during winter.
-           Analising time before christmas break we can see that Wojtek and Tymek
+           Analysing time before Christmas break we can see that Wojtek and Tymek
            usually travel using public transport like trams, buses or subway, while
            Czarek, in contrast to them, travels mostly by car and train.
-           Everybody takes a walk sometimes, especially Wojtek, but those aren't
+           Everybody takes a walk sometimes, especially Wojtek, but these aren't
            long distances anyway. During holidays Wojtek made more than 2000 
            kilometers in total, mostly by train and plane. No one was even close to him, as
-           Czarek made no more than 700km and Tymek significantly less. 
+           Czarek made no more than 700km, and Tymek significantly less. 
            It might be noted that nobody was travelling by subway at that time.
            For more details try to play with it yourself!",
            style = "text-align: justify;"),
