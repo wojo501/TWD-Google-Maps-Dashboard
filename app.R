@@ -244,7 +244,7 @@ server <- function(input, output) {
   
   #Czesc Czarek
   output$barPlot <- renderPlot({
-    trans_df$weekDay <- factor(trans_df$weekDay, levels = c("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"))
+    trans_df$weekDay <- factor(trans_df$weekDay, levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
     trans_df %>% 
       filter(date >= input$date_range_trans[1] & date <= input$date_range_trans[2]) %>%
       filter(type %in% input$transport) %>%
@@ -256,7 +256,7 @@ server <- function(input, output) {
       scale_fill_manual(
         values = c(Czarek = "#4285F4", Wojtek = "#0F9D58", Tymek = "#F4B400")
       ) +
-      labs(title = "", y = "kilometers", x = "", fill = "person", ) +
+      labs(title = "", y = "Kilometers", x = "", fill = "person", ) +
       theme_minimal() +
       theme(axis.text=element_text(size=10.5), legend.title = element_blank())
   })
