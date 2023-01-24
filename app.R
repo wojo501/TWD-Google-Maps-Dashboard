@@ -197,7 +197,7 @@ time_ui <- fluidPage(
                         "tydzien",
                         "Choose week:",
                         min = "2022-12-12",
-                        max = "2023-01-03",
+                        max = "2023-01-24",
                         value = "2022-12-13",
                         format = "yyyy-mm-dd",
                         startview = "month",
