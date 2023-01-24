@@ -141,8 +141,8 @@ map_ui <- fluidPage(
            county. Because of it, the center of Warsaw is mostly covered with yellow markers. 
            Coming to Czarek, it can be seen that he lives outside the city and he 
            uses Warsaw East Station a lot. On winter holidays he went to Sokołów and Toruń.
-           Are you interested which places we visit and how often? Use our map 
-           and try to find out yourself!",
+           Why Czarek haven't travelled once in january during weekend? That's because he 
+           wasn't fully healthy. For more insides try it yourself!",
            style = "text-align: justify;"
            
     ),
@@ -260,8 +260,8 @@ trans_ui <- fluidPage(
                                          selected = ""),)
              ),
              dateRangeInput("date_range_trans", "Select date range:",
-                            start = "2022-12-07", end = "2023-01-05",
-                            min = "2022-12-07", max = "2023-01-05",
+                            start = "2022-12-07", end = "2023-01-24",
+                            min = "2022-12-07", max = "2023-01-24",
                             format = "yyyy-mm-dd", startview = "month",
                             autoclose = TRUE),
            )),
