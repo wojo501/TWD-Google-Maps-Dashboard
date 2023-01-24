@@ -49,7 +49,6 @@ df_raw_t <- df_raw_t %>%
                                                   first_row_with_wydzial$placeVisit_location_latitudeE7, placeVisit_location_latitudeE7),
          placeVisit_location_longitudeE7 = if_else(grepl("Wydział", placeVisit_location_name),
                                                    first_row_with_wydzial$placeVisit_location_longitudeE7, placeVisit_location_longitudeE7))
-
 df_raw_w <- df_combine("raw_data/december_data_w", "raw_data/january_data_w")
 
 df_raw_w <- df_raw_w %>%

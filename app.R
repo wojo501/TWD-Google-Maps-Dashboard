@@ -12,8 +12,8 @@ options(shiny.usecairo=T)
 useShinyjs()
 
 map_df <- read.csv("map_data/map_df.csv", encoding = 'UTF-8')
-filterData <- readRDS(file = "ramkiW/data.rds")
-baseFrame <- readRDS(file = "ramkiW/baseFrame.rds")
+filterData <- readRDS(file = "time_data/data.rds")
+baseFrame <- readRDS(file = "time_data/baseFrame.rds")
 trans_df <- read.csv("trans_data/dataC", encoding = 'UTF-8')
 
 
@@ -29,7 +29,7 @@ info_ui <- fluidPage(
     column(width = 3),
     column(width = 6, 
            "Welcome to our webpage. This shiny app was created for Data 
-           Visualisation Techniques by 3 WUT students. For over a month we have
+           Visualisation Techniques course by 3 WUT students. For almost two months we have
            been collecting data using Google Maps, which had access to our
            location 24 hours a day. Thanks to this, we could acquire information
            such as time spent in a certain place or mean of transport used.
@@ -41,7 +41,7 @@ info_ui <- fluidPage(
   fluidRow(
     column(width = 1),
     column(width = 4,
-           img(src = 'czarek.png', height = '200px',
+           img(src = 'czarek.png', height = '250px',
                style = "display: block; margin: 0 auto; cursor: pointer;",
                onclick ="window.open('https://github.com/CCzarek', '_blank')"),
            br(),
@@ -49,14 +49,14 @@ info_ui <- fluidPage(
 
     ),
     column(width = 2,
-           img(src = 'tymek.png', height = '200px', style = "display: block; margin: 0 auto; cursor: pointer;",
+           img(src = 'tymek.png', height = '250px', style = "display: block; margin: 0 auto; cursor: pointer;",
                onclick ="window.open('https://github.com/tymsoncyferki', '_blank')"),
            br(),
            tags$figcaption("Tymek", align = 'center', style = "font-size: 30px;")
            
     ),
     column(width = 4,
-           img(src = 'wojtek.png', height = '200px', style = "display: block; margin: 0 auto; cursor: pointer;",
+           img(src = 'wojtek.png', height = '250px', style = "display: block; margin: 0 auto; cursor: pointer;",
                onclick ="window.open('https://github.com/wojo501', '_blank')"),
            br(),
            tags$figcaption("Wojtek", align = 'center', style = "font-size: 30px;")
@@ -71,8 +71,31 @@ info_ui <- fluidPage(
            ",
            style = "text-align: center;"),
     column(width = 3)),
+  br(),
+  br(),
+  fluidRow(
+    column(width = 2),
+    column(width = 4,
+           img(src = 'maps_logo.png', height = '200px',
+               style = "display: block; margin: 0 auto; cursor: pointer;",
+               onclick ="window.open('https://takeout.google.com/takeout/custom/local_actions,location_history,maps,mymaps?dnm=false&continue=https://myaccount.google.com/yourdata/maps&hl=en&utm_source=privacy-advisor-maps',
+               '_blank')"),
+           br(),
+           tags$figcaption("Download your Google Maps data", align = 'center', style = "font-size: 25px;")
+    ),
+    column(width = 4,
+           img(src = 'github_logo.png', height = '200px',
+               style = "display: block; margin: 0 auto; cursor: pointer;",
+               onclick ="window.open('https://github.com/tymsoncyferki/TWD_Projekt2',
+               '_blank')"),
+           br(),
+           tags$figcaption("View our Github repository", align = 'center', style = "font-size: 25px;")
+    ),
+  ),
   
+    
 )
+
 
 map_ui <- fluidPage(
   
@@ -104,8 +127,8 @@ map_ui <- fluidPage(
            ),
            
            dateRangeInput("date_range", "Select date range:",
-                          start = "2022-12-07", end = "2023-01-05",
-                          min = "2022-12-07", max = "2023-01-05",
+                          start = "2022-12-07", end = "2023-01-24",
+                          min = "2022-12-07", max = "2023-01-24",
                           format = "yyyy-mm-dd", startview = "month",
                           autoclose = TRUE)),
            br(),
@@ -388,7 +411,7 @@ app_ui <- navbarPage(
                 <footer class='text-center text-sm-start' style='width:100%;'>
                 <hr>
                 <p class='text-center' style='font-size:12px;'>
-                  Data Visualization Techniques 2023 
+                  <a class='text-dark' href='https://github.com/MI2-Education/2023Z-DataVisualizationTechniques/tree/main/projects/project2'  style='text-decoration: none'>Data Visualization Techniques 2023</a> 
                 </p>
                 </footer>
                 "),
