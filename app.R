@@ -198,7 +198,7 @@ time_ui <- fluidPage(
                         "tydzien",
                         "Choose week:",
                         min = "2022-12-12",
-                        max = "2023-01-03",
+                        max = "2023-01-24",
                         value = "2022-12-13",
                         format = "yyyy-mm-dd",
                         startview = "month",
@@ -261,8 +261,8 @@ trans_ui <- fluidPage(
                                          selected = ""),)
              ),
              dateRangeInput("date_range_trans", "Select date range:",
-                            start = "2022-12-07", end = "2023-01-05",
-                            min = "2022-12-07", max = "2023-01-05",
+                            start = "2022-12-07", end = "2023-01-24",
+                            min = "2022-12-07", max = "2023-01-24",
                             format = "yyyy-mm-dd", startview = "month",
                             autoclose = TRUE),
            )),
@@ -280,7 +280,8 @@ trans_ui <- fluidPage(
            kilometers in total, mostly by train and plane. No one was even close to him, as
            Czarek made no more than 700km, and Tymek significantly less. 
            It might be noted that nobody was travelling by subway at that time.
-           For more details try to play with it yourself!",
+           Why Czarek haven't travelled once in january during weekend? That's because he 
+           wasn't fully healthy. For more insides try it yourself!",
            style = "text-align: justify;"),
     column(width = 1)
   ),
@@ -303,7 +304,7 @@ server <- function(input, output) {
   
   #Czesc Czarek
   output$barPlot <- renderPlot({
-    trans_df$weekDay <- factor(trans_df$weekDay, levels = c("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"))
+    trans_df$weekDay <- factor(trans_df$weekDay, levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
     trans_df %>% 
       filter(date >= input$date_range_trans[1] & date <= input$date_range_trans[2]) %>%
       filter(type %in% cbind(input$transport1, input$transport2)) %>%
@@ -315,7 +316,7 @@ server <- function(input, output) {
       scale_fill_manual(
         values = c(Czarek = "#4285F4", Wojtek = "#0F9D58", Tymek = "#F4B400")
       ) +
-      labs(title = "", y = "kilometers", x = "", fill = "person", ) +
+      labs(title = "", y = "Kilometers", x = "", fill = "person", ) +
       theme_minimal() +
       theme(axis.text=element_text(size=10.5), legend.title = element_blank())
   })
@@ -366,7 +367,19 @@ server <- function(input, output) {
       full_join(baseFrame, by = c("weekday", "person")) %>% 
       mutate(hours = coalesce(hours.x, hours.y)) %>% 
       select(-c(hours.x, hours.y)) %>% 
-      filter(person %in% osoby)
+      filter(person %in% osoby) %>% 
+      mutate(weekdayN=case_when(
+        weekday==1~"Mon",
+        weekday==2~"Tue",
+        weekday==3~"Wed",
+        weekday==4~"Thu",
+        weekday==5~"Fri",
+        weekday==6~"Sat",
+        weekday==7~"Sun"
+      ))
+    
+    
+    
     
     plot <- ggplot(data = graphData, aes(x=weekday, y=hours, group = person, color = person)) +
       geom_line() + 
@@ -375,7 +388,7 @@ server <- function(input, output) {
       ) +
       geom_point() +
       theme_minimal()+
-      scale_x_continuous("Weekday", labels = graphData$weekday, breaks = graphData$weekday) +
+      scale_x_continuous("Weekday", labels = graphData$weekdayN, breaks = graphData$weekday) +
       labs(y = "Hours") +
       theme(legend.title = element_blank(),
             legend.position = "none")

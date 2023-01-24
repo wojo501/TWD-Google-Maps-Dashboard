@@ -17,15 +17,10 @@ janCsv <- as.data.frame(read.csv(file = "raw_data/january_data_t", encoding = "U
 decCsv <- as.data.frame(read.csv(file = "raw_data/december_data_c", encoding = "UTF-8"))
 janCsv <- as.data.frame(read.csv(file = "raw_data/january_data_c", encoding = "UTF-8"))
 
-
-
-View(decCsv)
-View(janCsv)
-
 ###
 #To dodał Czarek
 #jak to zaaplikujesz na moich ramkach danych to powinno działać wyszukiwanie mojego domu :)
-decCsv <- decCsv %>% 
+janCsv <- janCsv %>% 
   mutate(placeVisit_location_name = case_when(
     (placeVisit_location_name == "" & placeVisit_location_address != "") ~ placeVisit_location_address,
     TRUE ~ placeVisit_location_name
@@ -92,16 +87,15 @@ fun <- c("unii", "fryzjer", "rostock", "museum", "suntago", "royal", "church", "
 home <- c("konstancin", "home")
 uni <- c("wydział", "pw")
 fun <- c("ramen", "asia", "boisko", "green", "garden", "mcdonald's", "momencik", "park", "soto", "sphinx", "cafe",
-         "piaseczno", "handsome", "dworzec", "kabaty", "stańczyka",
-         "tarasy", "gołków")
-work <- c("arkadia", "magazyn")
-other <- c("biedronka", "stara", "lidl")
+         "piaseczno", "handsome", "dworzec", "kabaty", "stańczyka", "kebab", "marcello", "dolinka", "pawilony", "wars", 
+         "tarasy", "gołków", "arkadia", "boisko", "galeria", "janki")
+other <- c("biedronka", "stara", "lidl", "magazyn", "lecznica", "żabka")
 
 #View(filterData)
 #stringi Czarek
-home <- c("kazimierów", "repkowska", "sokołowska", "halinów")
+home <- c("kazimierów", "willa", "repkowska", "sokołowska")
 uni <- c("gmach", "university")
-fun <- c("cybermachina", "gato", "kredens", "kuchnia", "manekin", "muzeum", "cafe", "restauracja", "willa")
+fun <- c("cybermachina", "gato", "kredens", "kuchnia", "manekin", "muzeum", "cafe", "restauracja")
 
 
 homes <- filterData[sapply(strsplit(filterData$name, split=" "), function(str) any(home %in% str)), ] %>% 
@@ -131,14 +125,14 @@ filterData <- filterData %>%
 #View(filterData)
 
 #dir.create("ramkiW")
-saveRDS(filterData, file = "ramkiW/dataW.rds")
-saveRDS(filterData, file = "ramkiW/dataT.rds")
-saveRDS(filterData, file = "ramkiW/dataC.rds")
+saveRDS(filterData, file = "time_data/dataW.rds")
+saveRDS(filterData, file = "time_data/dataT.rds")
+saveRDS(filterData, file = "time_data/dataC.rds")
 
 View(filterDataC)
-filterDataW <- readRDS(file = "ramkiW/dataW.rds")
-filterDataT <- readRDS(file = "ramkiW/dataT.rds")
-filterDataC <- readRDS(file = "ramkiW/dataC.rds")
+filterDataW <- readRDS(file = "time_data/dataW.rds")
+filterDataT <- readRDS(file = "time_data/dataT.rds")
+filterDataC <- readRDS(file = "time_data/dataC.rds")
 #View(filterDataC)
 #filterDataC %>% filter(time_diff != 0)
 
@@ -151,8 +145,8 @@ filterDataC <- filterDataC %>%
 filterData <- rbind(filterDataW, filterDataT, filterDataC) %>% 
   select(-time_diff)
 
-saveRDS(filterData, file = "ramkiW/data.rds")
-filterData <- readRDS(file = "ramkiW/data.rds")
+saveRDS(filterData, file = "time_data/data.rds")
+filterData <- readRDS(file = "time_data/data.rds")
 filterData %>% filter(minutes > 1440)
 
 View(filterData)
@@ -175,6 +169,23 @@ graphData <- filterData %>%
 View(graphData)
 #View(graphDataW)
 
+days <- c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+graphData <- graphData %>% 
+  mutate(weekdayN=case_when(
+    weekday==1~"Mon",
+    weekday==2~"Tue",
+    weekday==3~"Wed",
+    weekday==4~"Thu",
+    weekday==5~"Fri",
+    weekday==6~"Sat",
+    weekday==7~"Sun"
+  ))
+
+graphData  %>% 
+  print(weekday)
+
+typeof(factor(graphData$weekday[1]))
+View(graphData)
 graphData <- graphData %>% 
   full_join(baseFrame, by = c("weekday", "person")) %>% 
   mutate(hours = coalesce(hours.x, hours.y)) %>% 
@@ -187,6 +198,19 @@ plot <- ggplot(data = graphData, aes(x=weekday, y=hours, group = person, colour 
   theme_bw()+
   scale_x_continuous("weekday", labels = graphData$weekday, breaks = graphData$weekday)
 plot
+
+plot1 <- ggplot(data = graphData, aes(x=weekday, y=hours, group = person, color = person)) +
+  geom_line() + 
+  scale_color_manual(
+    values = c("C" = "#4285F4", "W" = "#0F9D58", "T" = "#F4B400")
+  ) +
+  geom_point() +
+  theme_minimal()+
+  scale_x_continuous("Weekday", labels = graphData$weekdayN, breaks = graphData$weekday) +
+  labs(y = "Hours") +
+  theme(legend.title = element_blank(),
+        legend.position = "none")
+plot1
 
 View(graphData)
 
