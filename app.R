@@ -238,7 +238,7 @@ trans_ui <- fluidPage(
   fluidRow(
     column(width = 1),
     column(width = 11, 
-           "Sum of kilometers we travelled during the weekday.")),
+           "Sum of kilometers we have travelled during the weekday.")),
   br(),
   
   fluidRow(
@@ -292,6 +292,14 @@ trans_ui <- fluidPage(
              color = "#2fa4e7")),
     column(width = 1)
   ),
+)
+
+file_ui <- fluidPage(
+  "Now it is your turn!",
+  fluidRow(
+    fileInput("file", "Choose JSON file"),
+    downloadButton("download", "Download CSV")
+  )
 )
 
 server <- function(input, output) {
