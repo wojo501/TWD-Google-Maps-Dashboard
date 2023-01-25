@@ -41,7 +41,7 @@ info_ui <- fluidPage(
   fluidRow(
     column(width = 1),
     column(width = 4,
-           img(src = 'czarek.png', height = '250px',
+           img(src = 'czarek.png', height = '220px',
                style = "display: block; margin: 0 auto; cursor: pointer;",
                onclick ="window.open('https://github.com/CCzarek', '_blank')"),
            br(),
@@ -49,14 +49,14 @@ info_ui <- fluidPage(
 
     ),
     column(width = 2,
-           img(src = 'tymek.png', height = '250px', style = "display: block; margin: 0 auto; cursor: pointer;",
+           img(src = 'tymek.png', height = '220px', style = "display: block; margin: 0 auto; cursor: pointer;",
                onclick ="window.open('https://github.com/tymsoncyferki', '_blank')"),
            br(),
            tags$figcaption("Tymek", align = 'center', style = "font-size: 30px;")
            
     ),
     column(width = 4,
-           img(src = 'wojtek.png', height = '250px', style = "display: block; margin: 0 auto; cursor: pointer;",
+           img(src = 'wojtek.png', height = '220px', style = "display: block; margin: 0 auto; cursor: pointer;",
                onclick ="window.open('https://github.com/wojo501', '_blank')"),
            br(),
            tags$figcaption("Wojtek", align = 'center', style = "font-size: 30px;")
@@ -76,7 +76,7 @@ info_ui <- fluidPage(
   fluidRow(
     column(width = 2),
     column(width = 4,
-           img(src = 'maps_logo.png', height = '200px',
+           img(src = 'maps_logo.png', height = '180px',
                style = "display: block; margin: 0 auto; cursor: pointer;",
                onclick ="window.open('https://takeout.google.com/takeout/custom/local_actions,location_history,maps,mymaps?dnm=false&continue=https://myaccount.google.com/yourdata/maps&hl=en&utm_source=privacy-advisor-maps',
                '_blank')"),
@@ -84,7 +84,7 @@ info_ui <- fluidPage(
            tags$figcaption("Download your Google Maps data", align = 'center', style = "font-size: 25px;")
     ),
     column(width = 4,
-           img(src = 'github_logo.png', height = '200px',
+           img(src = 'github_logo.png', height = '180px',
                style = "display: block; margin: 0 auto; cursor: pointer;",
                onclick ="window.open('https://github.com/tymsoncyferki/TWD_Projekt2',
                '_blank')"),
@@ -295,7 +295,10 @@ trans_ui <- fluidPage(
   ),
 )
 
+
+
 server <- function(input, output) {
+  
   
   #Strona główna
   shinyjs::onclick("image_tymek", function(){
@@ -318,7 +321,8 @@ server <- function(input, output) {
       ) +
       labs(title = "", y = "Kilometers", x = "", fill = "person", ) +
       theme_minimal() +
-      theme(axis.text=element_text(size=13,face="bold"), legend.title = element_blank(), axis.title=element_text(size=13,face="bold"),
+      theme(text = element_text(color = "#4f4e4d"),
+        axis.text=element_text(size=13,face="bold"), legend.title = element_blank(), axis.title=element_text(size=13,face="bold"),
             legend.text = element_text(size=11,face="bold"))
   })
   
@@ -391,9 +395,10 @@ server <- function(input, output) {
       theme_minimal()+
       scale_x_continuous("", labels = graphData$weekdayN, breaks = graphData$weekday) +
       labs(y = "Hours") +
-      theme(legend.title = element_blank(),
+      theme(text = element_text(color = "#4f4e4d"),
+        legend.title = element_blank(),
             legend.position = "none", 
-            axis.text=element_text(size=12,face="bold"), 
+            axis.text=element_text(size=13,face="bold"), 
             axis.title=element_text(size=13,face="bold"))
     plot
     

@@ -5,10 +5,10 @@ account: tymsoncyferki
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 8094836
-bundleId: 6760775
+bundleId: 6770544
 url: https://tymsoncyferki.shinyapps.io/project_maps/
-when: 1674396344.98081
-lastSyncTime: 1674396344.98083
+when: 1674605982.44908
+lastSyncTime: 1674605982.4491
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: json_to_csv.py|moje_dane.R|tests/places_chart.R|tests/places_map.R
+ignoredFiles: .RData|off_git|Urban_Rybak_Michaluk
