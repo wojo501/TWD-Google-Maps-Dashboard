@@ -8,6 +8,11 @@ library(shinyWidgets)
 library(htmltools)
 library(shinyBS)
 library(shinyjs)
+library(jsonlite)
+library(rjson)
+library(reticulate)
+library(purrr)
+library(jsontools)
 options(shiny.usecairo=T)
 useShinyjs()
 
@@ -295,10 +300,103 @@ trans_ui <- fluidPage(
   ),
 )
 
+user_ui <- fluidPage(
+  
+  fluidRow(
+    column(width = 1),
+    column(width = 11, 
+           titlePanel("Create your own map!"))),
+  
+  
+  fluidRow(
+    column(width = 1),
+    column(width = 11, 
+           "Upload JSON file with your own data from google maps and create map of places you have visited.")),
+  br(),
+  fluidRow(
+    column(width = 1),
+    column(width = 3,
+           wellPanel(
+             "How to download data:",
+             br(),
+             "1. Go to this website:",
+             
+             
+             a('Google Takeout', href='https://takeout.google.com/takeout/custom/local_actions,location_history,maps,mymaps?dnm=false&continue=https://myaccount.google.com/yourdata/maps&hl=en&utm_source=privacy-advisor-maps')
+             ,
+             br(),
+             "2. Select 'Location History' and click next.",
+             br(),
+             "3. Choose 'Send download link via email' and create export.",
+             br(),
+             "6. Go to your mailbox and download zip file.",
+             br(),
+             "7. Extract files and find 'Semantic Location History'.",
+             br(),
+             "8. Choose which month you want to visualize. File should look like this: '2023_JANUARY.json'",
+             br(),
+             "9. Upload the file here by clicking 'Browse'.",
+             br(),
+             "10. You are all set!",
+             br(),
+             br(),
+           fileInput("file", "Upload your file here:", buttonLabel = "Browse", accept = ".json"))),
+    column(width = 7,
+           shinycssloaders::withSpinner(
+             leafletOutput("userMap", height = "550px"),
+             color = "#2fa4e7"))
+  )
+  
+  
+)
 
 
 server <- function(input, output) {
   
+  # pliki
+  process_file <- reactive({
+    print("try")
+    req(input$file)
+    user_data_raw <- fromJSON(file=input$file$datapath)
+    user_data <- user_data_raw$timelineObjects
+    print(user_data[[1]])
+    user_df <- data.frame(name = character(0), address = character(0), latitude = numeric(0), longitude = numeric(0))
+    for (i in user_data) {
+      row <- c(0, 0, 0, 0)
+      row[1] <- ifelse(length(i$placeVisit$location$name) > 0,i$placeVisit$location$name, "")
+      row[2] <- ifelse(length(i$placeVisit$location$address) > 0, i$placeVisit$location$address, "")
+      row[3] <- ifelse(length(i$placeVisit$location$latitudeE7) > 0, i$placeVisit$location$latitudeE7, "")
+      row[4] <- ifelse(length(i$placeVisit$location$longitudeE7) > 0, i$placeVisit$location$longitudeE7, "")
+      user_df <- rbind(user_df, row)
+    }
+    colnames(user_df) <- c("name", "address", "latitude", "longitude")
+    
+    file_df <- user_df %>%
+      filter(address != "") %>%
+      mutate(lat = as.numeric(latitude) / 10000000) %>%
+      mutate(lng = as.numeric(longitude) / 10000000)
+    print(file_df)
+    return(file_df)
+  })
+  
+  output$userMap <- renderLeaflet({
+    req(input$file)
+    file_df <- process_file()
+    file_df %>%
+      group_by(name, address, lat, lng) %>%
+      summarise(number = n()) %>%
+      mutate(number = ifelse(number > 18, 20, number + 2)) %>%
+      leaflet() %>%
+      addTiles() %>% 
+      addCircleMarkers(lng = ~lng,
+                       lat = ~lat,
+                       radius = ~number,
+                       popup = ~name,
+                       color = ~"#4285F4",
+                       opacity = 0.7,
+                       fillOpacity = 0.3
+      )
+  })
   
   #Strona główna
   shinyjs::onclick("image_tymek", function(){
@@ -412,6 +510,7 @@ app_ui <- navbarPage(
   tabPanel('Map', map_ui, icon = icon(name="glyphicon glyphicon-map-marker",lib="glyphicon")),
   tabPanel('Time', time_ui, icon = icon(name="glyphicon glyphicon-time",lib="glyphicon")),
   tabPanel('Transport', trans_ui, icon = icon(name="glyphicon glyphicon-road",lib="glyphicon")),
+  tabPanel('User', user_ui, icon = icon(name="glyphicon glyphicon-user",lib='glyphicon')),
   theme = bslib::bs_theme(bootswatch = "cerulean",
                           primary = '#4285F4',
                           secondary = '#F4B400',

@@ -16,10 +16,10 @@ library(jsontools)
 options(shiny.usecairo=T)
 useShinyjs()
 
-map_df <- read.csv("map_data/map_df.csv", encoding = 'UTF-8')
-filterData <- readRDS(file = "time_data/data.rds")
-baseFrame <- readRDS(file = "time_data/baseFrame.rds")
-trans_df <- read.csv("trans_data/dataC", encoding = 'UTF-8')
+map_df <- read.csv("data/map_data/map_df.csv", encoding = 'UTF-8')
+filterData <- readRDS(file = "data/time_data/data.rds")
+baseFrame <- readRDS(file = "data/time_data/baseFrame.rds")
+trans_df <- read.csv("data/trans_data/dataC", encoding = 'UTF-8')
 
 
 info_ui <- fluidPage(
