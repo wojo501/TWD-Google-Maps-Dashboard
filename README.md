@@ -1,4 +1,4 @@
-# Project ME
+# Project ME Data Visualization Techniques 
 
 This project was created by:
 - [Wojciech Michaluk](https://github.com/wojo501)
