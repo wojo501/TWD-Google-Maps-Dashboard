@@ -11,3 +11,7 @@ Analysys and vizualisation were created thanks to google takeout datasets.
 
 app link: https://tymsoncyferki.shinyapps.io/project_maps/
 
+![Map](https://github.com/wojo501/TWD-Google-Maps-Dashboard/blob/main/pictures/map.png)
+![Line Charts](https://github.com/wojo501/TWD-Google-Maps-Dashboard/blob/main/pictures/lineCharts.png)
+![Bar Charts](https://github.com/wojo501/TWD-Google-Maps-Dashboard/blob/main/pictures/barCharts.png)
+![Create Map](https://github.com/wojo501/TWD-Google-Maps-Dashboard/blob/main/pictures/mapCreate.png)
